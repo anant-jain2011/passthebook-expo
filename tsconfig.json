@@ -14,5 +14,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-  ]
+, "components/TypedText.jsx", "components/themed-view.jsx", "hooks/use-theme-color.js", "app/(tabs)/index.jsx"  ]
 }
