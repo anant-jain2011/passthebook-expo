@@ -1,13 +1,14 @@
-import React from "react";
-import { Link } from "expo-router";
+import BookCard from "@/components/BookCard";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 import TypedText from "@/components/TypedText";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { ScrollView, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { Link } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet } from "react-native";
 
 const featuredBooks = [
   {
@@ -15,38 +16,42 @@ const featuredBooks = [
     title: "Mathematics NCERT",
     subject: "Mathematics",
     grade: "10",
-    board: "Excellent",
+    condition: "Excellent",
     location: "Delhi",
     ownerName: "Aditya S.",
     createdAt: "2023-05-15",
+    board: "CBSE",
   },
   {
     id: "2",
     title: "Science NCERT",
     subject: "Science",
     grade: "9",
-    board: "Good",
+    condition: "Good",
     location: "Mumbai",
     ownerName: "Priya K.",
     createdAt: "2023-06-02",
+    board: "CBSE",
   },
   {
     id: "3",
     title: "English Literature",
     subject: "English",
     grade: "11",
-    board: "Fair",
+    condition: "Fair",
     location: "Bangalore",
     ownerName: "Rahul M.",
     createdAt: "2023-06-10",
+    board: "CBSE",
   },
 ];
 
 export default function HomeScreen() {
   return (
     <ScrollView
+      className="bg-white"
       style={{
-        backgroundColor: "white",
+        background: "white",
       }}
     >
       <ThemedView
@@ -66,7 +71,10 @@ export default function HomeScreen() {
           color="black"
           style={{ marginTop: 15 }}
         />
-        <ThemedText type="title" style={{ marginTop: 15, fontSize: 40 }}>
+        <ThemedText
+          type="title"
+          style={{ marginTop: 15, fontSize: 40, lineHeight: 40 }}
+        >
           PassTheBook
         </ThemedText>
       </ThemedView>
@@ -95,7 +103,14 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
 
-      <ThemedView className="flex flex-wrap gap-4 pt-4 mt-4">
+      <ThemedView
+        className="flex flex-row gap-4 pt-4 mt-4 justify-center items-center w-full"
+        style={
+          {
+            // backgroundColor: "#0ea5e9",
+          }
+        }
+      >
         <Link
           href="/find-book"
           className="text-white px-6 py-4 rounded-full font-medium hover:bg-book-blue/90 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
@@ -104,6 +119,7 @@ export default function HomeScreen() {
           Find Textbooks{" "}
           <Entypo name="chevron-thin-right" size={18} color="white" />
         </Link>
+
         <Link
           href="/list-book"
           className="bg-transparent border-2 border-book-blue text-book-blue px-6 py-3 rounded-full font-medium hover:bg-book-blue/10 transition-all flex items-center gap-2"
@@ -112,157 +128,341 @@ export default function HomeScreen() {
         </Link>
       </ThemedView>
 
-      <ThemedView className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <ThemedView className="flex flex-col gap-3">
-          <ThemedView className="w-12 h-12 rounded-full bg-book-light-blue flex items-center justify-center">
+      <ThemedView className="py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <ThemedView className="flex flex-col gap-3 w-full px-[5%]">
+          <ThemedView className="w-12 h-12 rounded-full flex items-center justify-center ml-1">
             <Feather
               name="book-open"
-              size={24}
+              size={26}
               color="black"
               style={{
                 borderRadius: 50,
                 backgroundColor: "#a0F2FE",
-                padding: 5,
+                padding: 8,
                 color: "#0a86c3",
               }}
             />
           </ThemedView>
-          <ThemedText type="subtitle" className="text-xl font-semibold">
+          <ThemedText type="subtitle" className="text-xl font-semibold ml-2">
             Accessible Education
           </ThemedText>
-          <ThemedText className="text-gray-600">
+          <ThemedText className="text-gray-600 ml-2">
             Making textbooks available to every student in India.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView className="flex flex-col gap-3">
-          <ThemedView className="w-12 h-12 rounded-full bg-book-light-blue flex items-center justify-center">
+        <ThemedView className="flex flex-col gap-3 w-full px-[5%]">
+          <ThemedView className="w-12 h-12 rounded-full flex items-center justify-center ml-1">
             <FontAwesome
               name="recycle"
-              size={24}
+              size={26}
               color="black"
               style={{
                 borderRadius: 50,
                 backgroundColor: "#a0F2FE",
-                padding: 5,
+                padding: 8,
                 color: "#0a86c3",
               }}
             />
           </ThemedView>
-          <ThemedText type="subtitle" className="text-xl font-semibold">
+          <ThemedText type="subtitle" className="text-xl font-semibold ml-2">
             Reduce Waste
           </ThemedText>
-          <ThemedText className="text-gray-600">
+          <ThemedText className="text-gray-600 ml-2">
             Giving textbooks a second life reduces paper waste.
           </ThemedText>
         </ThemedView>
 
-        <ThemedView className="flex flex-col gap-3">
-          <ThemedView className="w-12 h-12 rounded-full bg-book-light-blue flex items-center justify-center">
+        <ThemedView className="flex flex-col gap-3 w-full px-[5%]">
+          <ThemedView className="w-12 h-12 rounded-full flex items-center justify-center ml-1">
             <Feather
               name="heart"
-              size={24}
+              size={26}
               color="black"
               style={{
                 borderRadius: 50,
                 backgroundColor: "#a0F2FE",
-                padding: 5,
+                padding: 8,
                 color: "#0a86c3",
               }}
             />
           </ThemedView>
-          <ThemedText type="subtitle" className="text-xl font-semibold">
+          <ThemedText type="subtitle" className="text-xl font-semibold ml-2">
             Community Building
           </ThemedText>
-          <ThemedText className="text-gray-600">
+          <ThemedText className="text-gray-600 ml-2">
             Connecting students to help each other succeed.
           </ThemedText>
         </ThemedView>
       </ThemedView>
 
-      <ThemedView className="section bg-book-gray">
-        <ThemedView className="container mx-auto">
-          <ThemedView className="text-center max-w-3xl mx-auto mb-16">
-            <ThemedText className="inline-block px-3 py-1 rounded-full bg-book-light-blue text-book-blue text-sm font-medium mb-4">
-              Simple Process
+      <ThemedView
+        className="section bg-book-gray"
+        style={{ paddingVertical: 60, paddingHorizontal: 16 }}
+      >
+        <ThemedView className="container mx-auto" style={{ marginBottom: 48 }}>
+          <ThemedText
+            className="rounded-full"
+            style={{
+              backgroundColor: "#a0F2FE",
+              color: "#0086c3",
+              borderRadius: 50,
+              width: "70%",
+              margin: "auto",
+              textAlign: "center",
+              padding: 10,
+              fontWeight: "600",
+              fontSize: 14,
+              marginBottom: 24,
+              letterSpacing: 0.5,
+            }}
+          >
+            Simple Process
+          </ThemedText>
+          <ThemedText
+            style={{
+              fontSize: 32,
+              fontWeight: "700",
+              marginBottom: 16,
+              textAlign: "center",
+            }}
+          >
+            How PassTheBook Works
+          </ThemedText>
+          <ThemedText
+            style={{
+              color: "#6b7280",
+              fontSize: 16,
+              lineHeight: 24,
+              textAlign: "center",
+              maxWidth: 600,
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            Our platform makes it easy to exchange textbooks in three simple
+            steps, connecting students across India.
+          </ThemedText>
+        </ThemedView>
+
+        <ThemedView
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 24,
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            paddingHorizontal: 16,
+          }}
+        >
+          <ThemedView
+            style={{
+              flex: 1,
+              minWidth: 300,
+              backgroundColor: "#ffffff",
+              borderRadius: 16,
+              padding: 32,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 3,
+              alignItems: "center",
+            }}
+          >
+            <ThemedView
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 32,
+                backgroundColor: "#e0f2fe",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 24,
+              }}
+            >
+              <Feather name="search" size={32} color="#0a86c3" />
+            </ThemedView>
+
+            <ThemedText
+              style={{
+                fontSize: 20,
+                fontWeight: "600",
+                marginBottom: 16,
+                textAlign: "center",
+              }}
+            >
+              Find Books
             </ThemedText>
-            <ThemedText className="text-3xl md:text-4xl font-bold mb-6">
-              How PassTheBook Works
+
+            <ThemedText
+              style={{
+                color: "#6b7280",
+                fontSize: 15,
+                lineHeight: 22,
+                marginBottom: 24,
+                textAlign: "center",
+              }}
+            >
+              Search for the textbooks you need by subject, grade, or location
+              to find matches near you.
             </ThemedText>
-            <ThemedText className="text-gray-600 text-lg">
-              Our platform makes it easy to exchange textbooks in three simple
-              steps, connecting students across India.
-            </ThemedText>
+
+            <Link
+              href="/find-book"
+              style={{
+                color: "#0ea5e9",
+                fontWeight: "600",
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              Start Searching
+              <Entypo name="chevron-thin-right" size={16} color="#0ea5e9" />
+            </Link>
           </ThemedView>
 
-          <ThemedView className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <ThemedView className="bg-white rounded-2xl p-8 shadow-soft text-center">
-              <ThemedView className="w-16 h-16 rounded-full bg-book-light-blue flex items-center justify-center mx-auto mb-6">
-                <Feather name="search" size={32} color="#0a86c3" />
-              </ThemedView>
-
-              <ThemedText className="text-xl font-semibold mb-4">
-                Find Books
-              </ThemedText>
-
-              <ThemedText className="text-gray-600 mb-6">
-                Search for the textbooks you need by subject, grade, or location
-                to find matches near you.
-              </ThemedText>
-
-              <Link
-                href="/find-book"
-                className="text-book-blue font-medium hover:underline inline-flex items-center"
-              >
-                Start Searching
-                <Entypo name="chevron-thin-right" size={18} color="white" />
-              </Link>
+          <ThemedView
+            style={{
+              flex: 1,
+              minWidth: 300,
+              backgroundColor: "#ffffff",
+              borderRadius: 16,
+              padding: 32,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 3,
+              alignItems: "center",
+            }}
+          >
+            <ThemedView
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 32,
+                backgroundColor: "#e0f2fe",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 24,
+              }}
+            >
+              <Feather name="upload" size={32} color="#0a86c3" />
             </ThemedView>
 
-            <ThemedView className="bg-white rounded-2xl p-8 shadow-soft text-center">
-              <ThemedView className="w-16 h-16 rounded-full bg-book-light-blue flex items-center justify-center mx-auto mb-6">
-                <Feather name="upload" size={32} color="black" />
-              </ThemedView>
+            <ThemedText
+              style={{
+                fontSize: 20,
+                fontWeight: "600",
+                marginBottom: 16,
+                textAlign: "center",
+              }}
+            >
+              List Books
+            </ThemedText>
 
-              <ThemedText className="text-xl font-semibold mb-4">
-                List Books
-              </ThemedText>
+            <ThemedText
+              style={{
+                color: "#6b7280",
+                fontSize: 15,
+                lineHeight: 22,
+                marginBottom: 24,
+                textAlign: "center",
+              }}
+            >
+              List your old textbooks with details about condition, subject, and
+              grade to help others find them.
+            </ThemedText>
 
-              <ThemedText className="text-gray-600 mb-6">
-                List your old textbooks with details about board, subject, and
-                grade to help others find them.
-              </ThemedText>
+            <Link
+              href="/list-book"
+              style={{
+                color: "#0ea5e9",
+                fontWeight: "600",
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              List Your Books
+              <Entypo name="chevron-thin-right" size={16} color="#0ea5e9" />
+            </Link>
+          </ThemedView>
 
-              <Link
-                href="/list-book"
-                className="text-book-blue font-medium hover:underline inline-flex items-center"
-              >
-                List Your Books
-              </Link>
+          <ThemedView
+            style={{
+              flex: 1,
+              minWidth: 300,
+              backgroundColor: "#ffffff",
+              borderRadius: 16,
+              padding: 32,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 3,
+              alignItems: "center",
+            }}
+          >
+            <ThemedView
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 32,
+                backgroundColor: "#e0f2fe",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 24,
+              }}
+            >
+              <FontAwesome5 name="users" size={28} color="#0a86c3" />
             </ThemedView>
 
-            <ThemedView className="bg-white rounded-2xl p-8 shadow-soft text-center">
-              <ThemedView className="w-16 h-16 rounded-full bg-book-light-blue flex items-center justify-center mx-auto mb-6">
-                <FontAwesome5 name="users" size={24} color="black" />
-              </ThemedView>
+            <ThemedText
+              style={{
+                fontSize: 20,
+                fontWeight: "600",
+                marginBottom: 16,
+                textAlign: "center",
+              }}
+            >
+              Connect
+            </ThemedText>
 
-              <ThemedText className="text-xl font-semibold mb-4">
-                Connect
-              </ThemedText>
+            <ThemedText
+              style={{
+                color: "#6b7280",
+                fontSize: 15,
+                lineHeight: 22,
+                marginBottom: 24,
+                textAlign: "center",
+              }}
+            >
+              Contact book owners directly and arrange a convenient exchange
+              method that works for both of you.
+            </ThemedText>
 
-              <ThemedText className="text-gray-600 mb-6">
-                Contact book owners directly and arrange a convenient exchange
-                method that works for both of you.
-              </ThemedText>
-
-              <Link
-                href="#"
-                className="text-book-blue font-medium hover:underline inline-flex items-center"
-              >
-                Learn More
-                <Entypo name="chevron-thin-right" size={18} color="white" />
-              </Link>
-            </ThemedView>
+            <Link
+              href="#"
+              style={{
+                color: "#0ea5e9",
+                fontWeight: "600",
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              Learn More
+              <Entypo name="chevron-thin-right" size={16} color="#0ea5e9" />
+            </Link>
           </ThemedView>
         </ThemedView>
       </ThemedView>
@@ -272,7 +472,7 @@ export default function HomeScreen() {
         <ThemedView className="container mx-auto">
           <ThemedView className="flex justify-between items-center mb-12">
             <ThemedView>
-              <ThemedText className="inline-block px-3 py-1 rounded-full bg-book-light-blue text-book-blue text-sm font-medium mb-4">
+              <ThemedText className="inline-block px-3 py-1 rounded-full text-book-blue text-sm font-medium mb-4">
                 Recently Listed
               </ThemedText>
 
@@ -291,9 +491,12 @@ export default function HomeScreen() {
           </ThemedView>
 
           <ThemedView className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredBooks.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
+            <ThemedText>
+              {featuredBooks.map((book) => {
+                // return JSON.stringify(book);
+                return <BookCard key={book.id} book={book} />;
+              })}
+            </ThemedText>
           </ThemedView>
         </ThemedView>
       </ThemedView>

@@ -1,147 +1,390 @@
-
-import React, { useState } from 'react';
-import Button from '@/components/Button';
-import { useToast } from '@/hooks/use-toast';
-import { Book, MapPin, User, X } from 'lucide-react';
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React, { useState } from "react";
+import { Pressable, StyleSheet, TextInput } from "react-native";
 
-const BookCard = ({ book, className }) => {
-  const { toast } = useToast();
+const BookCard = ({ book }) => {
   const [showContactForm, setShowContactForm] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  // Define board badge colors
   const boardColors = {
-    "UK Board": ["oklch(96.2% 0.044 156.743)", "oklch(39.3% 0.095 152.535)"],
-    CBSE: ["oklch(93.2% 0.032 255.585)", "oklch(37.9% 0.146 265.522)"],
-    ICSE: ["oklch(97.6% 0.083 94.735)", "oklch(44.3% 0.146 94.735)"],
-  };
-
-  const handleContactSubmit = (e) => {
-    e.preventDefault();
-    
-    // In a real app, you would send this message to the backend
-    console.log('Sending message to owner:', { bookId: book.id, message });
-    
-    // Show success toast
-    toast({
-      title: "Message sent!",
-      description: `Your message has been sent to ${book.ownerName}.`,
-    });
-    
-    // Reset and close the form
-    setMessage('');
-    setShowContactForm(false);
+    "UK Board": ["#f0f9ff", "#0369a1"],
+    CBSE: ["#eff6ff", "#1e40af"],
+    ICSE: ["#fef3c7", "#d97706"],
   };
 
   return (
-    <ScrollView
-      className={
-        "glass-panel p-5 transition-all duration-300 hover:shadow-lg transform hover:translate-y-[-4px] relative" +
-        className
-      }
-    >
-      <ThemedView className="flex flex-col h-full">
-        <ThemedView className="flex justify-between items-start mb-4">
-          <ThemedView>
-            <ThemedText className="inline-block text-xs font-medium text-book-blue bg-book-light-blue px-2 py-1 rounded-full mb-2">
-              {book.subject}
-            </ThemedText>
-            <ThemedText className="text-xl font-semibold text-book-charcoal mb-1">
-              {book.title}
-            </ThemedText>
-            <ThemedView className="flex items-center text-gray-500 text-sm">
-              <Book size={14} className="mr-1 text-book-blue" />
-              <ThemedText>Grade {book.grade}</ThemedText>
-            </ThemedView>
-          </ThemedView>
+    <ThemedView style={styles.card}>
+      {typeof book != "undefined" && (
+        <>
+          <ThemedView style={styles.cardContent}>
+            {/* Header Section */}
+            <ThemedView style={styles.headerSection}>
+              <ThemedView style={styles.titleSection}>
+                <ThemedText style={styles.subjectBadge}>
+                  {book.subject}
+                </ThemedText>
+                <ThemedText style={styles.bookTitle}>{book.title}</ThemedText>
+                <ThemedView style={styles.gradeRow}>
+                  <FontAwesome
+                    name="book"
+                    size={14}
+                    color="#0ea5e9"
+                    style={{ marginRight: 6 }}
+                  />
+                  <ThemedText style={styles.gradeText}>
+                    Grade {book.grade}
+                  </ThemedText>
+                </ThemedView>
+              </ThemedView>
 
-          <ThemedText
-            className={"text-xs px-2 py-1 rounded-full font-medium"}
-            style={{
-              backgroundColor: boardColors[book.board][0],
-              color: boardColors[book.board][1],
-            }}
-          >
-            {book.board}
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView className="flex-grow">
-          <ThemedView className="flex items-center mb-2 text-gray-600 text-sm">
-            <MapPin size={14} className="mr-1 text-book-blue" />
-            <ThemedText>{book.location}</ThemedText>
-          </ThemedView>
-
-          <ThemedView className="flex items-center mb-4 text-gray-600 text-sm">
-            <User size={14} className="mr-1 text-book-blue" />
-            <ThemedText>Listed by {book.ownerName}</ThemedText>
-          </ThemedView>
-        </ThemedView>
-
-        <ThemedView className="pt-4 border-t border-gray-100">
-          <ThemedText
-            className="w-full rounded-full bg-book-blue text-base py-1.5 cursor-pointer hover:bg-blue-300/90 text-white transition-all duration-300"
-            onClick={() => setShowContactForm(true)}
-          >
-            Contact Owner
-          </ThemedText>
-        </ThemedView>
-      </ThemedView>
-
-      {/* Contact Form Overlay */}
-      {showContactForm && (
-        <ThemedView className="absolute inset-0 bg-white bg-opacity-95 z-10 p-5 rounded-lg animate-fade-in">
-          <ThemedView className="flex justify-between items-center mb-4">
-            <ThemedText className="font-semibold">
-              Contact {book.ownerName}
-            </ThemedText>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowContactForm(false)}
-              className="h-8 w-8"
-            >
-              <Entypo name="cross" size={18} color="black" />
-            </Button>
-          </ThemedView>
-
-          <form onSubmit={handleContactSubmit}>
-            <ThemedView className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                About {book.title}
-              </label>
-              <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-book-blue focus:border-transparent"
-                rows={4}
-                placeholder={`Hi ${book.ownerName}, I'm interested in your ${book.title} textbook...`}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-              />
-            </ThemedView>
-            <ThemedView className="flex space-x-2">
-              <Button
-                type="submit"
-                className="flex-1 rounded-full bg-book-blue hover:bg-book-blue/90 text-white"
+              <ThemedText
+                style={[
+                  styles.boardBadge,
+                  {
+                    backgroundColor: boardColors[book.board]?.[0],
+                    color: boardColors[book.board]?.[1],
+                  },
+                ]}
               >
-                Send Message
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="rounded-full"
-                onClick={() => setShowContactForm(false)}
-              >
-                Cancel
-              </Button>
+                {book.board}
+              </ThemedText>
             </ThemedView>
-          </form>
-        </ThemedView>
+
+            {/* Info Section */}
+            <ThemedView style={styles.infoSection}>
+              <ThemedView style={styles.infoRow}>
+                <FontAwesome
+                  name="map-marker"
+                  size={14}
+                  color="#0ea5e9"
+                  style={{ marginRight: 8 }}
+                />
+                <ThemedText style={styles.infoText}>{book.location}</ThemedText>
+              </ThemedView>
+
+              <ThemedView style={styles.infoRow}>
+                <FontAwesome
+                  name="user-circle"
+                  size={14}
+                  color="#0ea5e9"
+                  style={{ marginRight: 8 }}
+                />
+                <ThemedText style={styles.infoText}>
+                  By {book.ownerName}
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+
+            {/* Condition Badge */}
+            <ThemedView style={styles.conditionSection}>
+              <ThemedText style={styles.conditionLabel}>Condition:</ThemedText>
+              <ThemedText
+                style={[
+                  styles.conditionBadge,
+                  { backgroundColor: getConditionColor(book.condition) },
+                ]}
+              >
+                {book.condition}
+              </ThemedText>
+            </ThemedView>
+          </ThemedView>
+
+          {/* Contact Button */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.contactButton,
+              pressed && styles.contactButtonPressed,
+            ]}
+            onPress={() => setShowContactForm(true)}
+          >
+            <ThemedText style={styles.contactButtonText}>
+              Contact Owner
+            </ThemedText>
+            <Entypo
+              name="chevron-thin-right"
+              size={16}
+              color="white"
+              style={{ marginLeft: 6 }}
+            />
+          </Pressable>
+
+          {/* Contact Form Modal */}
+          {showContactForm && (
+            <ThemedView style={styles.formOverlay}>
+              <ThemedView style={styles.formContainer}>
+                <ThemedView style={styles.formHeader}>
+                  <ThemedText style={styles.formTitle}>
+                    Contact {book.ownerName}
+                  </ThemedText>
+                  <Pressable
+                    onPress={() => setShowContactForm(false)}
+                    style={styles.closeButton}
+                  >
+                    <Entypo name="cross" size={20} color="#6b7280" />
+                  </Pressable>
+                </ThemedView>
+
+                <ThemedView style={styles.formBody}>
+                  <ThemedText style={styles.formLabel}>
+                    Message about {book.title}
+                  </ThemedText>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder={`Hi ${book.ownerName}, I'm interested in your ${book.title}...`}
+                    placeholderTextColor="#9ca3af"
+                    value={message}
+                    onChangeText={setMessage}
+                    multiline
+                    numberOfLines={4}
+                  />
+                </ThemedView>
+
+                <ThemedView style={styles.formActions}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.submitButton,
+                      pressed && styles.submitButtonPressed,
+                    ]}
+                  >
+                    <ThemedText style={styles.submitButtonText}>
+                      Send Message
+                    </ThemedText>
+                  </Pressable>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.cancelButton,
+                      pressed && styles.cancelButtonPressed,
+                    ]}
+                    onPress={() => setShowContactForm(false)}
+                  >
+                    <ThemedText style={styles.cancelButtonText}>
+                      Cancel
+                    </ThemedText>
+                  </Pressable>
+                </ThemedView>
+              </ThemedView>
+            </ThemedView>
+          )}
+        </>
       )}
-    </ScrollView>
+    </ThemedView>
   );
 };
+
+const getConditionColor = (condition) => {
+  const colors = {
+    Excellent: "#d1fae5",
+    Good: "#dbeafe",
+    Fair: "#fef3c7",
+    Poor: "#fee2e2",
+  };
+  return colors[condition] || "#f3f4f6";
+};
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 4,
+  },
+  cardContent: {
+    padding: 20,
+  },
+  headerSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 16,
+  },
+  titleSection: {
+    flex: 1,
+    marginRight: 12,
+  },
+  subjectBadge: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#0ea5e9",
+    backgroundColor: "#e0f2fe",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    marginBottom: 8,
+    alignSelf: "flex-start",
+  },
+  bookTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1f2937",
+    marginBottom: 6,
+    lineHeight: 24,
+  },
+  gradeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  gradeText: {
+    fontSize: 13,
+    color: "#6b7280",
+  },
+  boardBadge: {
+    fontSize: 11,
+    fontWeight: "600",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  infoSection: {
+    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f3f4f6",
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 13,
+    color: "#6b7280",
+  },
+  conditionSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  conditionLabel: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#6b7280",
+  },
+  conditionBadge: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#374151",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    flexShrink: 1,
+  },
+  contactButton: {
+    backgroundColor: "#0ea5e9",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  contactButtonPressed: {
+    backgroundColor: "#0284c7",
+    opacity: 0.9,
+  },
+  contactButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  formOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+    zIndex: 1000,
+  },
+  formContainer: {
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    maxHeight: "80%",
+  },
+  formHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1f2937",
+  },
+  closeButton: {
+    padding: 8,
+  },
+  formBody: {
+    marginBottom: 20,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 10,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    color: "#1f2937",
+    minHeight: 100,
+    textAlignVertical: "top",
+  },
+  formActions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  submitButton: {
+    flex: 1,
+    backgroundColor: "#0ea5e9",
+    paddingVertical: 12,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  submitButtonPressed: {
+    backgroundColor: "#0284c7",
+  },
+  submitButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    paddingVertical: 12,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f9fafb",
+  },
+  cancelButtonPressed: {
+    backgroundColor: "#f3f4f6",
+  },
+  cancelButtonText: {
+    color: "#6b7280",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+});
 
 export default BookCard;
