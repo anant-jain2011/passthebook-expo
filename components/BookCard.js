@@ -1,157 +1,164 @@
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, TextInput } from "react-native";
+import { Button, Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 const BookCard = ({ book }) => {
-  const [showContactForm, setShowContactForm] = useState(false);
   const [message, setMessage] = useState("");
+  const [imgs, setImgs] = useState(book.imgs || []);
+  const [giverDetails, setGiverDetails] = useState(book.giverDetails || {});
+  const [subjects, setSubjects] = useState(book.subjects || []);
+  const [showContactForm, setShowContactForm] = useState(false);
 
   const boardColors = {
-    "UK Board": ["#f0f9ff", "#0369a1"],
-    CBSE: ["#eff6ff", "#1e40af"],
-    ICSE: ["#fef3c7", "#d97706"],
+    "uk_board": ["#f0f9ff", "#0369a1", "UK Board"],
+    "cbse": ["#eff6ff", "#1e40af", "CBSE"],
+    "icse": ["#fef3c7", "#d97706", "ICSE"],
+    "ncert": ["#ecfdf5", "#059669", "NCERT"],
   };
 
   return (
-    <ThemedView style={styles.card}>
+    <View style={styles.card}>
       {typeof book != "undefined" && (
         <>
-          <ThemedView style={styles.cardContent}>
-            {/* Header Section */}
-            <ThemedView style={styles.headerSection}>
-              <ThemedView style={styles.titleSection}>
-                <ThemedText style={styles.subjectBadge}>
-                  {book.subject}
-                </ThemedText>
-                <ThemedText style={styles.bookTitle}>{book.title}</ThemedText>
-                <ThemedView style={styles.gradeRow}>
-                  <FontAwesome
-                    name="book"
-                    size={14}
-                    color="#0ea5e9"
-                    style={{ marginRight: 6 }}
-                  />
-                  <ThemedText style={styles.gradeText}>
-                    Grade {book.grade}
-                  </ThemedText>
-                </ThemedView>
-              </ThemedView>
+          <View style={styles.cardContent}>
+            <Text style={styles.subjectBadge}>
+              {subjects.join(", ")}
+            </Text>
 
-              <ThemedText
-                style={[
-                  styles.boardBadge,
-                  {
-                    backgroundColor: boardColors[book.board]?.[0],
-                    color: boardColors[book.board]?.[1],
-                  },
-                ]}
-              >
-                {book.board}
-              </ThemedText>
-            </ThemedView>
+            <View style={styles.cardRow}>
+              <Image
+                source={{ uri: imgs[0] }}
+                style={styles.bookImage}
+              />
 
-            {/* Info Section */}
-            <ThemedView style={styles.infoSection}>
-              <ThemedView style={styles.infoRow}>
-                <FontAwesome
-                  name="map-marker"
-                  size={14}
-                  color="#0ea5e9"
-                  style={{ marginRight: 8 }}
-                />
-                <ThemedText style={styles.infoText}>{book.location}</ThemedText>
-              </ThemedView>
+              <View style={styles.cardInfo}>
+                <View style={styles.headerSection}>
+                  <View style={styles.titleSection}>
+                    <Text style={styles.bookTitle} numberOfLines={2}>{book.title}</Text>
+                    <View style={styles.gradeRow}>
+                      <FontAwesome
+                        name="book"
+                        size={14}
+                        color="#0ea5e9"
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={styles.gradeText}>
+                        Grade {book.grade}
+                      </Text>
+                    </View>
+                  </View>
 
-              <ThemedView style={styles.infoRow}>
-                <FontAwesome
-                  name="user-circle"
-                  size={14}
-                  color="#0ea5e9"
-                  style={{ marginRight: 8 }}
-                />
-                <ThemedText style={styles.infoText}>
-                  By {book.ownerName}
-                </ThemedText>
-              </ThemedView>
-            </ThemedView>
+                  <Text
+                    style={[
+                      styles.boardBadge,
+                      {
+                        backgroundColor: boardColors[book.board]?.[0],
+                        color: boardColors[book.board]?.[1],
+                      },
+                    ]}
+                  >
+                    {boardColors[book.board]?.[2]}
+                  </Text>
+                </View>
+
+                <View style={styles.infoSection}>
+                  <View style={styles.infoRow}>
+                    <FontAwesome
+                      name="user-circle"
+                      size={14}
+                      color="#0ea5e9"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.infoText}>
+                      By {giverDetails.ownerName}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.footerRow}>
+                  <View style={styles.ratingBadge}>
+                    <Text style={styles.rating}>{book.location || ""}</Text>
+                  </View>
+                </View>
+
+              </View>
+            </View>
 
             {/* Condition Badge */}
-            <ThemedView style={styles.conditionSection}>
-              <ThemedText style={styles.conditionLabel}>Condition:</ThemedText>
-              <ThemedText
+            <View style={styles.conditionSection}>
+              <Text style={styles.conditionLabel}>Condition:</Text>
+              <Text
                 style={[
                   styles.conditionBadge,
-                  { backgroundColor: getConditionColor(book.condition) },
+                  { backgroundColor: getConditionColor(book.condition)[0], color: getConditionColor(book.condition)[1] },
                 ]}
               >
-                {book.condition}
-              </ThemedText>
-            </ThemedView>
-          </ThemedView>
+                {getConditionColor(book.condition)[2]}
+              </Text>
+            </View>
 
-          {/* Contact Button */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.contactButton,
-              pressed && styles.contactButtonPressed,
-            ]}
-            onPress={() => setShowContactForm(true)}
-          >
-            <ThemedText style={styles.contactButtonText}>
-              Contact Owner
-            </ThemedText>
-            <Entypo
-              name="chevron-thin-right"
-              size={16}
-              color="white"
-              style={{ marginLeft: 6 }}
-            />
-          </Pressable>
+            {/* Contact Button */}
+            <View
+              style={({ pressed }) => [
+                styles.contactButton,
+                { backgroundColor: "#00aeff" },
+                pressed && styles.contactButtonPressed,
+              ]}
+              onPress={() => setShowContactForm(true)}
+            >
+              <Text style={styles.contactButtonText}>
+                Contact Owner
+              </Text>
+              <Entypo
+                name="chevron-thin-right"
+                size={16}
+                color="white"
+                style={{ marginLeft: 6 }}
+              />
+            </View>
+          </View>
 
-          {/* Contact Form Modal */}
           {showContactForm && (
-            <ThemedView style={styles.formOverlay}>
-              <ThemedView style={styles.formContainer}>
-                <ThemedView style={styles.formHeader}>
-                  <ThemedText style={styles.formTitle}>
-                    Contact {book.ownerName}
-                  </ThemedText>
+            <View style={styles.formOverlay}>
+              <View style={styles.formContainer}>
+                <View style={styles.formHeader}>
+                  <Text style={styles.formTitle}>
+                    Contact {giverDetails.ownerName}
+                  </Text>
                   <Pressable
                     onPress={() => setShowContactForm(false)}
                     style={styles.closeButton}
                   >
                     <Entypo name="cross" size={20} color="#6b7280" />
                   </Pressable>
-                </ThemedView>
+                </View>
 
-                <ThemedView style={styles.formBody}>
-                  <ThemedText style={styles.formLabel}>
+                <View style={styles.formBody}>
+                  <Text style={styles.formLabel}>
                     Message about {book.title}
-                  </ThemedText>
+                  </Text>
                   <TextInput
                     style={styles.textInput}
-                    placeholder={`Hi ${book.ownerName}, I'm interested in your ${book.title}...`}
+                    placeholder={`Hi ${book.giverDetails.ownerName}, I'm interested in your ${book.title}...`}
                     placeholderTextColor="#9ca3af"
                     value={message}
                     onChangeText={setMessage}
                     multiline
                     numberOfLines={4}
                   />
-                </ThemedView>
+                </View>
 
-                <ThemedView style={styles.formActions}>
+                <View style={styles.formActions}>
                   <Pressable
                     style={({ pressed }) => [
                       styles.submitButton,
                       pressed && styles.submitButtonPressed,
                     ]}
                   >
-                    <ThemedText style={styles.submitButtonText}>
+                    <Text style={styles.submitButtonText}>
                       Send Message
-                    </ThemedText>
+                    </Text>
                   </Pressable>
                   <Pressable
                     style={({ pressed }) => [
@@ -160,28 +167,29 @@ const BookCard = ({ book }) => {
                     ]}
                     onPress={() => setShowContactForm(false)}
                   >
-                    <ThemedText style={styles.cancelButtonText}>
+                    <Text style={styles.cancelButtonText}>
                       Cancel
-                    </ThemedText>
+                    </Text>
                   </Pressable>
-                </ThemedView>
-              </ThemedView>
-            </ThemedView>
+                </View>
+              </View>
+            </View>
           )}
         </>
       )}
-    </ThemedView>
+    </View>
   );
 };
 
 const getConditionColor = (condition) => {
   const colors = {
-    Excellent: "#d1fae5",
-    Good: "#dbeafe",
-    Fair: "#fef3c7",
-    Poor: "#fee2e2",
+    new: ["#dcfce7", "#16a34a", "New"],
+    like_new: ["#fef3c7", "#d97706", "Like New"],
+    used_good: ["#fce7f3", "#be185d", "Used - Good"],
+    used_acceptable: ["#fed7aa", "#ea580c", "Used - Acceptable"],
+    poor: ["#fecaca", "#dc2626", "Poor"],
   };
-  return colors[condition] || "#f3f4f6";
+  return colors[condition] || ["#0055ff"];
 };
 
 const styles = StyleSheet.create({
@@ -197,7 +205,37 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   cardContent: {
-    padding: 20,
+    padding: 12,
+  },
+  cardRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  bookImage: {
+    width: 100,
+    height: 140,
+    borderRadius: 12,
+    marginRight: 16,
+  },
+  cardInfo: {
+    flex: 1,
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#6366f1",
+  },
+  conditionText: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginTop: 2,
+    fontWeight: "600",
   },
   headerSection: {
     flexDirection: "row",
@@ -280,15 +318,25 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   contactButton: {
-    backgroundColor: "#0ea5e9",
+    backgroundColor: "#00aeff",
     paddingVertical: 12,
     paddingHorizontal: 16,
+    minHeight: 44,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    marginHorizontal: 20,
-    marginBottom: 20,
+    alignSelf: "stretch",
+    marginTop: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#0077b6",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    zIndex: 10,
   },
   contactButtonPressed: {
     backgroundColor: "#0284c7",

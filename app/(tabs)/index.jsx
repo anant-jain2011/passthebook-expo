@@ -1,14 +1,14 @@
+import React from "react";
+import { Link } from "expo-router";
 import BookCard from "@/components/BookCard";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import TypedText from "@/components/TypedText";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { ScrollView, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Link } from "expo-router";
-import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
 
 const featuredBooks = [
   {
@@ -112,7 +112,7 @@ export default function HomeScreen() {
         }
       >
         <Link
-          href="/find-book"
+          href="/find-books"
           className="text-white px-6 py-4 rounded-full font-medium hover:bg-book-blue/90 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
           style={{ backgroundColor: "#0ea5e9" }}
         >
@@ -121,7 +121,7 @@ export default function HomeScreen() {
         </Link>
 
         <Link
-          href="/list-book"
+          href="/add-books"
           className="bg-transparent border-2 border-book-blue text-book-blue px-6 py-3 rounded-full font-medium hover:bg-book-blue/10 transition-all flex items-center gap-2"
         >
           List Your Books

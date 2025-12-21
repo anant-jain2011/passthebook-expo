@@ -1,7 +1,10 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "react",
     "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": [],
     "paths": {
       "@/*": [
         "./*"
@@ -13,6 +16,12 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
-, "components/TypedText.jsx", "components/themed-view.jsx", "hooks/use-theme-color.js", "app/(tabs)/index.jsx"  ]
+    "nativewind-env.d.ts",
+    "components/TypedText.jsx",
+    "components/themed-view.jsx",
+    "hooks/use-theme-color.js",
+    "app/(tabs)/index.jsx",
+    "app/(tabs)/add-books.jsx"
+  ],
+  "extends": "expo/tsconfig.base"
 }

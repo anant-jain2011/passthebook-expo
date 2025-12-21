@@ -1,8 +1,8 @@
-import { Tabs } from "expo-router";
 import React from "react";
+import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { HapticTab } from "@/components/haptic-tab";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -48,11 +48,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="list-book"
+        name="add-books"
         options={{
           title: "Add Books",
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 size={24} name="plus-circle" color={color} />
+            <MaterialCommunityIcons name="book-plus" size={24} color={color} />
           ),
         }}
       />

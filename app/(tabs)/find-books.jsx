@@ -1,37 +1,20 @@
+import BookCard from "@/components/BookCard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const SkeletonLoader = () => (
   <View style={styles.skeletonCard}>
     <View style={[styles.skeletonImage, styles.skeleton]} />
-    <View style={[styles.skeletonTitle, styles.skeleton]} />
-    <View style={[styles.skeletonAuthor, styles.skeleton]} />
-    <View style={[styles.skeletonPrice, styles.skeleton]} />
-  </View>
-);
-
-const BookCard = ({ item }) => (
-  <LinearGradient
-    colors={["#ffffff", "#f8f9ff"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.card}
-  >
-    <Image source={{ uri: item.coverImage }} style={styles.bookImage} />
-    <View style={styles.content}>
-      <Text style={styles.title} numberOfLines={2}>
-        {item.title}
-      </Text>
-      <Text style={styles.author}>{item.author}</Text>
-      <View style={styles.footer}>
-        <Text style={styles.price}>₹{item.price}</Text>
-        <View style={styles.ratingBadge}>
-          <Text style={styles.rating}>★ {item.rating}</Text>
-        </View>
+    <View style={styles.skeletonContent}>
+      <View style={[styles.skeletonTitle, styles.skeleton]} />
+      <View style={[styles.skeletonAuthor, styles.skeleton]} />
+      <View style={styles.skeletonFooter}>
+        <View style={[styles.skeletonPrice, styles.skeleton]} />
+        <View style={[styles.skeletonBadge, styles.skeleton]} />
       </View>
     </View>
-  </LinearGradient>
+  </View>
 );
 
 export default function FindBooks() {
@@ -45,39 +28,12 @@ export default function FindBooks() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      // Replace with your actual API call
-      // const response = await fetch('YOUR_API_ENDPOINT');
-      // const data = await response.json();
-      // setBooks(data);
+      const response = await fetch("https://ptb-backend.vercel.app/get-books");
+      const data = await response.json();
 
       // Simulated delay
       setTimeout(() => {
-        setBooks([
-          {
-            id: "1",
-            title: "The Great Gatsby",
-            author: "F. Scott Fitzgerald",
-            price: 299,
-            coverImage: "https://via.placeholder.com/150x220?text=Gatsby",
-            rating: 4.5,
-          },
-          {
-            id: "2",
-            title: "1984",
-            author: "George Orwell",
-            price: 349,
-            coverImage: "https://via.placeholder.com/150x220?text=1984",
-            rating: 4.7,
-          },
-          {
-            id: "3",
-            title: "To Kill a Mockingbird",
-            author: "Harper Lee",
-            price: 279,
-            coverImage: "https://via.placeholder.com/150x220?text=Mockingbird",
-            rating: 4.8,
-          },
-        ]);
+        setBooks(data);
         setLoading(false);
       }, 2000);
     } catch (error) {
@@ -102,13 +58,15 @@ export default function FindBooks() {
           contentContainerStyle={styles.listContainer}
         />
       ) : (
-        <FlatList
-          data={books}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <BookCard item={item} />}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-        />
+        books.length > 0 ? <ScrollView style={styles.listContainer}>
+          {[books.pop()].map(book => (
+            <BookCard key={book._id} book={book} />
+          ))}
+        </ScrollView> : (
+          <View style={{ alignItems: 'center', marginTop: 50 }}>
+            <Text style={{ fontSize: 18, color: '#7c7c8e' }}>No books available at the moment.</Text>
+          </View>
+        )
       )}
     </LinearGradient>
   );
@@ -215,11 +173,15 @@ const styles = StyleSheet.create({
   skeleton: {
     backgroundColor: "#e5e7eb",
   },
+  skeletonContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
   skeletonTitle: {
     height: 16,
     borderRadius: 8,
     marginBottom: 8,
-    width: "80%",
+    width: "85%",
   },
   skeletonAuthor: {
     height: 12,
@@ -227,9 +189,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     width: "60%",
   },
+  skeletonFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
   skeletonPrice: {
     height: 14,
     borderRadius: 6,
     width: "40%",
+  },
+  skeletonBadge: {
+    width: 64,
+    height: 20,
+    borderRadius: 8,
   },
 });
