@@ -1,12 +1,12 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import Octicons from "@expo/vector-icons/Octicons";
+import { HapticTab } from "@/components/haptic-tab";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { HapticTab } from "@/components/haptic-tab";
-import Feather from "@expo/vector-icons/Feather";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Octicons from "@expo/vector-icons/Octicons";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();

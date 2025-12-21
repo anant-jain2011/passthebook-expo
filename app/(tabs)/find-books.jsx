@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import BookCard from "@/components/BookCard";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const SkeletonLoader = () => (
