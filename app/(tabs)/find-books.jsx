@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import BookCard from "@/components/BookCard";
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const SkeletonLoader = () => (
@@ -59,7 +59,7 @@ export default function FindBooks() {
         />
       ) : (
         books.length > 0 ? <ScrollView style={styles.listContainer}>
-          {[books.pop()].map(book => (
+          {books.map(book => (
             <BookCard key={book._id} book={book} />
           ))}
         </ScrollView> : (

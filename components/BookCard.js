@@ -17,15 +17,38 @@ const BookCard = ({ book }) => {
     ncert: ["#ecfdf5", "#059669", "NCERT"],
   };
 
+  const getConditionColor = (condition) => {
+    const colors = {
+      new: ["#dcfce7", "#16a34a", "New"],
+      like_new: ["#fef3c7", "#d97706", "Like New"],
+      used_good: ["#fce7f3", "#be185d", "Used - Good"],
+      used_acceptable: ["#fed7aa", "#ea580c", "Used - Acceptable"],
+      poor: ["#fecaca", "#dc2626", "Poor"],
+    };
+    return colors[condition] || ["#e5e7eb", "#374151", "Unknown"];
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.cardContent}>
-        <Text style={styles.subjectBadge}>{subjects}</Text>
+        <Text style={styles.subjectBadge}>{subjects.join(", ")}</Text>
 
         <View style={styles.cardRow}>
           <Image source={{ uri: imgs[0] }} style={styles.bookImage} />
 
           <View style={styles.cardInfo}>
+            <Text
+              style={[
+                styles.boardBadge,
+                {
+                  backgroundColor: boardColors[book.board]?.[0],
+                  color: boardColors[book.board]?.[1],
+                },
+              ]}
+            >
+              {boardColors[book.board]?.[2]}
+            </Text>
+
             <View style={styles.headerSection}>
               <View style={styles.titleSection}>
                 <Text style={styles.bookTitle} numberOfLines={3}>
@@ -38,22 +61,10 @@ const BookCard = ({ book }) => {
                 </View>
               </View>
 
-              <Text
-                style={[
-                  styles.boardBadge,
-                  {
-                    backgroundColor: boardColors[book.board]?.[0],
-                    color: boardColors[book.board]?.[1],
-                  },
-                ]}
-              >
-                {boardColors[book.board]?.[2]}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <FontAwesome name="user-circle" size={16} color="#0ea5e9" />
-              <Text style={styles.infoText}>By {giverDetails.ownerName}</Text>
+              <View style={styles.infoRow}>
+                <FontAwesome name="user-circle" size={16} color="#0ea5e9" />
+                <Text style={styles.infoText}>By {giverDetails.ownerName}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -125,17 +136,6 @@ const BookCard = ({ book }) => {
   );
 };
 
-const getConditionColor = (condition) => {
-  const colors = {
-    new: ["#dcfce7", "#16a34a", "New"],
-    like_new: ["#fef3c7", "#d97706", "Like New"],
-    used_good: ["#fce7f3", "#be185d", "Used - Good"],
-    used_acceptable: ["#fed7aa", "#ea580c", "Used - Acceptable"],
-    poor: ["#fecaca", "#dc2626", "Poor"],
-  };
-  return colors[condition] || ["#e5e7eb", "#374151", "Unknown"];
-};
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
@@ -169,6 +169,9 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginBottom: 10,
   },
+  headerSection: {
+    marginTop: 20,
+  },
   bookTitle: {
     fontSize: 20,
     fontWeight: "800",
@@ -191,6 +194,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
+    width: "fit-content",
+    alignSelf: "flex-end"
   },
   infoRow: {
     flexDirection: "row",

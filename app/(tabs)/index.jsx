@@ -50,7 +50,6 @@ const featuredBooks = [
 export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
-
       {/* ===== HEADER ===== */}
       <ThemedView style={styles.header}>
         <Feather name="book-open" size={36} color="#fff" />
@@ -175,7 +174,6 @@ export default function HomeScreen() {
           </ThemedText>
         </Link>
       </ThemedView>
-
     </ScrollView>
   );
 }
@@ -184,7 +182,6 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: "#f8fafc",
   },
-
   header: {
     backgroundColor: "#0ea5e9",
     paddingVertical: 32,
@@ -201,7 +198,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginLeft: 8,
   },
-
   heroBadge: {
     backgroundColor: "#e0f2fe",
     color: "#0369a1",
@@ -216,9 +212,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 22,
     fontWeight: "600",
-    marginVertical: 16,
+    marginTop: 22,
+    marginVertical: 10,
+    height: 26,
   },
-
   primaryBtn: {
     backgroundColor: "#0ea5e9",
     paddingVertical: 12,
@@ -230,6 +227,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
+    textAlign: "center",
   },
   secondaryBtn: {
     borderWidth: 1,
@@ -237,13 +235,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 999,
     alignItems: "center",
+    textAlign: "center",
     marginTop: 12,
   },
   secondaryBtnText: {
     color: "#0ea5e9",
     fontWeight: "700",
   },
-
   featureCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -261,7 +259,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     lineHeight: 22,
   },
-
   sectionBadge: {
     backgroundColor: "#e0f2fe",
     color: "#0369a1",
@@ -277,6 +274,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textAlign: "center",
     marginBottom: 12,
+    lineHeight: 36,
   },
   sectionDesc: {
     textAlign: "center",
