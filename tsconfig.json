@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": [],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",           // All TypeScript files
+    "**/*.tsx",          // All TypeScript React files
+    ".expo/types/**/*.ts",    // Expo type definitions
+    "expo-env.d.ts",     // Expo environment types
+    "components/TypedText.jsx",        // React component
+    "components/themed-view.jsx",      // React component
+    "hooks/use-theme-color.js",        // Custom hook
+    "app/(tabs)/index.jsx",            // App page
+    "app/(tabs)/add-books.jsx"         // App page
+  ],
+  "extends": "expo/tsconfig.base"
+}
