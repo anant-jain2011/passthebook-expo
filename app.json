@@ -19,8 +19,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "package": "com.anantjain2011.passthebookexpo",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.anantjain2011.passthebookexpo"
     },
     "web": {
       "output": "static",

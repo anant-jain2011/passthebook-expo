@@ -3,9 +3,9 @@ import PersistentButton from "@/components/PersistentButton";
 import { useAuth } from "@clerk/clerk-expo";
 import { FontAwesome } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Octicons from "@expo/vector-icons/Octicons";
-import { Tabs, usePathname, useRouter } from "expo-router";
+import { Redirect, Tabs, usePathname, useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,6 +17,12 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
   if (!isLoaded) return null;
+
+  const { isSignedIn } = useAuth();
+
+  if (!isSignedIn) {
+    return <Redirect href={"/(auth)/sign-in"} />;
+  }
 
   return (
     <>
@@ -60,7 +66,11 @@ export default function TabLayout() {
           options={{
             title: "Add Books",
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="book-plus" size={24} color={color} />
+              <MaterialCommunityIcons
+                name="book-plus"
+                size={24}
+                color={color}
+              />
             ),
           }}
         />
@@ -82,7 +92,10 @@ export default function TabLayout() {
       </Tabs>
 
       {/* @ts-ignore */}
-      <PersistentButton onPress={() => router.push("/chats-screen")} style={{ opacity: path !== "/chats-screen" ? 1 : 0 }} />
+      <PersistentButton
+        onPress={() => router.push("/chats-screen")}
+        style={{ opacity: path !== "/chats-screen" ? 1 : 0 }}
+      />
     </>
   );
 }

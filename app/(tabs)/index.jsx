@@ -8,44 +8,44 @@ import { ScrollView, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-const featuredBooks = [
-  {
-    id: "1",
-    title: "Mathematics NCERT",
-    subjects: ["Mathematics"],
-    grade: "10",
-    condition: "like_new",
-    location: "Delhi",
-    board: "cbse",
-    imgs: ["https://via.placeholder.com/100x140"],
-    giverDetails: { ownerName: "Aditya S." },
-    createdAt: "2023-05-15",
-  },
-  {
-    id: "2",
-    title: "Science NCERT",
-    subjects: ["Science"],
-    grade: "9",
-    condition: "used_good",
-    location: "Mumbai",
-    board: "cbse",
-    imgs: ["https://via.placeholder.com/100x140"],
-    giverDetails: { ownerName: "Priya K." },
-    createdAt: "2023-06-02",
-  },
-  {
-    id: "3",
-    title: "English Literature",
-    subjects: ["English"],
-    grade: "11",
-    condition: "used_acceptable",
-    location: "Bangalore",
-    board: "cbse",
-    imgs: ["https://via.placeholder.com/100x140"],
-    giverDetails: { ownerName: "Rahul M." },
-    createdAt: "2023-06-10",
-  },
-];
+// const featuredBooks = [
+//   {
+//     id: "1",
+//     title: "Mathematics NCERT",
+//     subjects: ["Mathematics"],
+//     grade: "10",
+//     condition: "like_new",
+//     location: "Delhi",
+//     board: "cbse",
+//     imgs: ["https://via.placeholder.com/100x140"],
+//     giverDetails: { ownerName: "Aditya S." },
+//     createdAt: "2023-05-15",
+//   },
+//   {
+//     id: "2",
+//     title: "Science NCERT",
+//     subjects: ["Science"],
+//     grade: "9",
+//     condition: "used_good",
+//     location: "Mumbai",
+//     board: "cbse",
+//     imgs: ["https://via.placeholder.com/100x140"],
+//     giverDetails: { ownerName: "Priya K." },
+//     createdAt: "2023-06-02",
+//   },
+//   {
+//     id: "3",
+//     title: "English Literature",
+//     subjects: ["English"],
+//     grade: "11",
+//     condition: "used_acceptable",
+//     location: "Bangalore",
+//     board: "cbse",
+//     imgs: ["https://via.placeholder.com/100x140"],
+//     giverDetails: { ownerName: "Rahul M." },
+//     createdAt: "2023-06-10",
+//   },
+// ];
 
 export default function HomeScreen() {
   return (
@@ -83,7 +83,9 @@ export default function HomeScreen() {
       <ThemedView style={{ padding: 16 }}>
         <ThemedView style={styles.featureCard}>
           <Feather name="book-open" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>Accessible Education</ThemedText>
+          <ThemedText style={styles.featureTitle}>
+            Accessible Education
+          </ThemedText>
           <ThemedText style={styles.featureDesc}>
             Making textbooks available to every student in India.
           </ThemedText>
@@ -99,7 +101,9 @@ export default function HomeScreen() {
 
         <ThemedView style={styles.featureCard}>
           <Feather name="heart" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>Community Building</ThemedText>
+          <ThemedText style={styles.featureTitle}>
+            Community Building
+          </ThemedText>
           <ThemedText style={styles.featureDesc}>
             Connecting students to help each other succeed.
           </ThemedText>
@@ -143,7 +147,7 @@ export default function HomeScreen() {
       </ThemedView>
 
       {/* ===== FEATURED BOOKS ===== */}
-      <ThemedView style={{ padding: 16 }}>
+      {/* <ThemedView style={{ padding: 16 }}>
         <ThemedText style={styles.sectionTitle}>Featured Books</ThemedText>
 
         <ThemedView style={styles.bookList}>
@@ -151,7 +155,7 @@ export default function HomeScreen() {
             <BookCard key={book.id} book={book} />
           ))}
         </ThemedView>
-      </ThemedView>
+      </ThemedView> */}
 
       {/* ===== CTA ===== */}
       <ThemedView style={{ padding: 24 }}>
@@ -163,9 +167,7 @@ export default function HomeScreen() {
         </ThemedText>
 
         <Link href="/find-books" style={styles.primaryBtn}>
-          <ThemedText style={styles.primaryBtnText}>
-            Find Textbooks
-          </ThemedText>
+          <ThemedText style={styles.primaryBtnText}>Find Textbooks</ThemedText>
         </Link>
 
         <Link href="/add-books" style={styles.secondaryBtn}>

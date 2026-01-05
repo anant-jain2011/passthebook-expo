@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "expo start --clear --tunnel",
+    "start": "expo start --clear",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -38,9 +38,8 @@
     "expo-status-bar": "~3.0.9",
     "expo-system-ui": "~6.0.9",
     "expo-web-browser": "~15.0.10",
-    "firebase": "^12.7.0",
-    "react": "19.1.4",
-    "react-dom": "19.1.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.1",
@@ -48,7 +47,7 @@
     "react-native-screens": "~4.16.0",
     "react-native-typewriter": "^0.7.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "~0.5.1"
+    "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

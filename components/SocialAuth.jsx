@@ -52,7 +52,7 @@ export default function SocialAuth() {
           style={{ width: 30, height: 30, marginRight: 12 }}
         />
         <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-          Sign In with Guggal
+          Sign In with Google
         </Text>
       </TouchableOpacity>
     </View>

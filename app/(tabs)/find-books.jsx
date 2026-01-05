@@ -1,7 +1,15 @@
 import BookCard from "@/components/BookCard";
+import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const SkeletonLoader = () => (
   <View style={styles.skeletonCard}>
@@ -28,7 +36,7 @@ export default function FindBooks() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://ptb-backend.vercel.app/get-books?id=");
+      const response = await fetch("https://ptb-backend.vercel.app/get-books");
       const data = await response.json();
 
       setTimeout(() => {
@@ -45,7 +53,14 @@ export default function FindBooks() {
     <LinearGradient colors={["#f0f4ff", "#ffffff"]} style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Discover Books</Text>
-        <Text style={styles.headerSubtitle}>Find your next favorite read</Text>
+        <Text style={styles.headerSubtitle}>Find the textbooks you need</Text>
+      </View>
+
+      <View style={styles.refreshButtonContainer}>
+        <TouchableOpacity onPress={fetchBooks} style={styles.refreshButton}>
+          <Text style={styles.refreshButtonText}>Refresh</Text>
+          <FontAwesome name="repeat" size={24} style={styles.refreshIcon} />
+        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -56,16 +71,18 @@ export default function FindBooks() {
           scrollEnabled={false}
           contentContainerStyle={styles.listContainer}
         />
-      ) : (
-        books.length > 0 ? <ScrollView style={styles.listContainer}>
-          {books.map(book => (
+      ) : books?.length > 0 ? (
+        <ScrollView style={styles.listContainer}>
+          {books.map((book) => (
             <BookCard key={book._id} book={book} />
           ))}
-        </ScrollView> : (
-          <View style={{ alignItems: 'center', marginTop: 50 }}>
-            <Text style={{ fontSize: 18, color: '#7c7c8e' }}>No books available at the moment.</Text>
-          </View>
-        )
+        </ScrollView>
+      ) : (
+        <View style={{ alignItems: "center", marginTop: 50 }}>
+          <Text style={{ fontSize: 18, color: "#7c7c8e" }}>
+            No books available at the moment.
+          </Text>
+        </View>
       )}
     </LinearGradient>
   );
@@ -90,6 +107,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#7c7c8e",
     fontWeight: "500",
+  },
+  refreshButtonContainer: {
+    paddingHorizontal: 20,
+    marginTop: -15,
+    marginBottom: 20,
+    alignItems: "flex-end",
+  },
+  refreshButton: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 14,
+    paddingBottom: 8,
+    borderRadius: 20,
+    paddingTop: -20,
+    flexDirection: "row",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: "#eef2ff",
+  },
+  refreshButtonText: {
+    color: "#4f46e5",
+    // marginTop: -5,
+    fontWeight: "700",
+    paddingTop: 8,
+  },
+  refreshIcon: {
+    color: "#4f46e5",
+    paddingLeft: 10,
+    paddingTop: 8,
+    fontSize: 20,
   },
   listContainer: {
     paddingHorizontal: 16,

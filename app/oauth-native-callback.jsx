@@ -1,8 +1,9 @@
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
-import { Redirect } from 'expo-router';
 import React from 'react';
+import { Redirect } from 'expo-router';
+import { View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SignedIn, SignedOut } from '@clerk/clerk-expo';
 
 export default function OAuthCallback() {
   return (

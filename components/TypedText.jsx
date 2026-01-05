@@ -9,9 +9,9 @@ export default function TypedMultipleTexts({
   useEffect(() => {
     const timer = setTimeout(
       () => {
-        setIndex((prev) => (prev + 1) % texts.length);
+        setIndex((prev) => (prev + 1) % texts?.length);
       },
-      texts[index].length * 60 + 800
+      texts[index]?.length * 60 + 800
     );
 
     return () => clearTimeout(timer);
