@@ -1,5 +1,4 @@
 import { Link } from "expo-router";
-import BookCard from "@/components/BookCard";
 import TypedText from "@/components/TypedText";
 import Feather from "@expo/vector-icons/Feather";
 import { ThemedText } from "@/components/themed-text";
@@ -7,6 +6,7 @@ import { ThemedView } from "@/components/themed-view";
 import { ScrollView, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // const featuredBooks = [
 //   {
@@ -48,10 +48,12 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 // ];
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
       {/* ===== HEADER ===== */}
-      <ThemedView style={styles.header}>
+      <ThemedView style={[styles.header, { paddingTop: insets.top }]}>
         <Feather name="book-open" size={36} color="#fff" />
         <ThemedText style={styles.headerTitle}>PassTheBook</ThemedText>
       </ThemedView>
@@ -186,7 +188,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#0ea5e9",
-    paddingVertical: 32,
+    paddingVertical: 10,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -199,6 +201,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#fff",
     marginLeft: 8,
+    lineHeight: 60,
   },
   heroBadge: {
     backgroundColor: "#e0f2fe",

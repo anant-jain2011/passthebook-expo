@@ -71,7 +71,7 @@ export default function FindBooks() {
           scrollEnabled={false}
           contentContainerStyle={styles.listContainer}
         />
-      ) : books?.length > 0 ? (
+      ) : books.length > 0 ? (
         <ScrollView style={styles.listContainer}>
           {books.map((book) => (
             <BookCard key={book._id} book={book} />

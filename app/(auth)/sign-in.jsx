@@ -1,15 +1,22 @@
-import React from 'react';
-import { useSignIn } from '@clerk/clerk-expo';
-import { Link, useRouter } from 'expo-router';
-import SocialAuth from '@/components/SocialAuth';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import SocialAuth from "@/components/SocialAuth";
+import { useSignIn } from "@clerk/clerk-expo";
+import { Image } from "expo-image";
+import { Link, useRouter } from "expo-router";
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
   const router = useRouter();
-  const [password, setPassword] = React.useState('');
+  const [password, setPassword] = React.useState("");
   const { signIn, setActive, isLoaded } = useSignIn();
-  const [emailAddress, setEmailAddress] = React.useState('');
+  const [emailAddress, setEmailAddress] = React.useState("");
 
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
@@ -21,22 +28,26 @@ export default function Page() {
         password,
       });
 
-      if (signInAttempt.status === 'complete') {
+      if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace('/');
+        router.replace("/");
       } else {
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <SocialAuth />
         <Text style={styles.title}>Sign In to PassTheBook</Text>
+        <Image
+          source={require("@/assets/images/logo.png")}
+          style={styles.logo}
+        />
+        <SocialAuth />
         <TextInput
           style={styles.input}
           autoCapitalize="none"
@@ -68,59 +79,69 @@ export default function Page() {
         </View>
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   content: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
+  },
+  logo: {
+    height: 250,
+    width: 250,
+    marginInline: "auto",
+    borderRadius: 250,
+    borderWidth: 2,
+    borderColor: "#eee",
+    marginBottom: 30,
+    // marginTop: -20
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 30,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 15,
     marginBottom: 15,
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   link: {
     fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '600',
+    color: "#007AFF",
+    fontWeight: "600",
   },
 });
