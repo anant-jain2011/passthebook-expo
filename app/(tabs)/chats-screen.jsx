@@ -31,7 +31,7 @@ export default function ChatsScreen() {
   useEffect(() => {
     Keyboard.addListener("keyboardDidShow", e => setSpace(e.endCoordinates.height - (insets.bottom * 1.5)));
     Keyboard.addListener("keyboardDidHide", () => setSpace(0));
-    
+
     scrollViewRef.current?.scrollToEnd({ animated: true });
 
     return () => {
@@ -64,12 +64,17 @@ export default function ChatsScreen() {
           }),
         }
       ).then((res) => res.json()).then((data) => {
-        newMsgs.at(-1).content = data.choices[0].message.content.replace(/\*\*/g, "");
-
-        setMessages(newMsgs);
+        setMessages(prevMsgs => {
+          const updatedMsgs = [...prevMsgs];
+          updatedMsgs[updatedMsgs.length - 1] = {
+            ...updatedMsgs[updatedMsgs.length - 1],
+            content: data.choices[0].message.content.replace(/\*\*/g, ""),
+          };
+          return updatedMsgs;
+        });
       });
 
-      router.push("/chats-screen");
+      //router.push("/chats-screen");
 
       setInput("");
     }
@@ -104,7 +109,7 @@ export default function ChatsScreen() {
           ))}
         </ScrollView>
 
-        <View style={{...styles.inputContainer, bottom: space}}>
+        <View style={{ ...styles.inputContainer, bottom: space }}>
           <TextInput
             style={styles.textInput}
             placeholder="Ask anything about PassTheBook..."
