@@ -1,3 +1,7 @@
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -8,9 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEffect, useState } from "react";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -22,90 +23,116 @@ export default function ProfileScreen() {
   const { user } = useUser();
   const { signOut } = useAuth();
   const insets = useSafeAreaInsets();
-  const [Booksets, setBooksets] = useState([]);
 
+  const [approved, setApproved] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [activeTab, setActiveTab] = useState("approved");
+
+  // FETCH DATA
   useEffect(() => {
     if (user) {
-      user.unsafeMetadata?.booksets &&
-        user.update({
-          unsafeMetadata: {
-            ...user.unsafeMetadata,
-            booksets: user.unsafeMetadata?.booksets.filter((a) => a),
-          },
-        });
+      const ids = user.unsafeMetadata?.booksets
+        ?.filter((id) => id)
+        .map((id) => encodeURIComponent(id.toString().trim()))
+        .join(",");
 
-      user.unsafeMetadata?.booksets?.length > 0 &&
-        (async () => {
-          let res = await fetch(
-            "https://ptb-backend.vercel.app/get-books?id=" +
-              user.unsafeMetadata?.booksets.join(",")
+      if (!ids) return;
+
+      (async () => {
+        try {
+          // Approved items
+          const resp = await fetch(
+            "https://ptb-backend.vercel.app/get-books?id=" + ids
           );
-          let data = await res.json();
-          setBooksets(data);
-        })();
+          const bs = await resp.json();
+
+          // Pending items
+          const res = await fetch(
+            "https://ptb-backend.vercel.app/get-requests?id=" + ids
+          );
+          const reqs = await res.json();
+
+          setApproved(bs || []);
+          setPending(reqs || []);
+        } catch (err) {
+          console.log(err);
+        }
+      })();
     }
-  }, []);
+  }, [user]);
 
-  // ✅ DELETE FUNCTION (GET REQUEST)
+  // DELETE FUNCTION
   const handleDelete = (booksetId) => {
-    Alert.alert(
-      "Delete Bookset",
-      "Are you sure you want to delete this bookset?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // GET request for delete
-              await fetch(
-                "https://ptb-backend.vercel.app/delete?id=" + booksetId
+    Alert.alert("Delete Item", "Are you sure you want to delete?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const safeId = encodeURIComponent(
+              booksetId.toString().trim()
+            );
+
+            await fetch(
+              "https://ptb-backend.vercel.app/delete?id=" + safeId
+            );
+
+            // Remove from both lists
+            setApproved((prev) =>
+              prev.filter((b) => b._id !== booksetId)
+            );
+            setPending((prev) =>
+              prev.filter((b) => b._id !== booksetId)
+            );
+
+            // Update Clerk metadata
+            const updatedIds =
+              user.unsafeMetadata?.booksets.filter(
+                (id) => id !== booksetId
               );
 
-              // Update UI instantly
-              setBooksets((prev) =>
-                prev.filter((b) => b._id !== booksetId)
-              );
-
-              // Update Clerk metadata
-              const updatedIds =
-                user.unsafeMetadata?.booksets.filter(
-                  (id) => id !== booksetId
-                );
-
-              await user.update({
-                unsafeMetadata: {
-                  ...user.unsafeMetadata,
-                  booksets: updatedIds,
-                },
-              });
-            } catch (err) {
-              console.log(err);
-              Alert.alert("Error", "Failed to delete bookset");
-            }
-          },
+            await user.update({
+              unsafeMetadata: {
+                ...user.unsafeMetadata,
+                booksets: updatedIds,
+              },
+            });
+          } catch (err) {
+            console.log(err);
+            Alert.alert("Error", "Delete failed");
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleSignOut = async () => {
     await signOut();
   };
 
+  const dataToShow =
+    activeTab === "approved" ? approved : pending;
+
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: -insets.bottom }]}>
+    <SafeAreaView style={{ ...styles.container, paddingBottom: -insets.bottom }}>
       {user && (
         <ScrollView showsVerticalScrollIndicator={false}>
+          {/* HEADER */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.settingsButton}>
-              <MaterialCommunityIcons name="cog" size={24} color="#333" />
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push("/notifications")}
+            >
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={30}
+                color="#333"
+              />
             </TouchableOpacity>
+
             <Text style={styles.headerTitle}>Profile</Text>
+
             <TouchableOpacity style={styles.settingsButton}>
               <MaterialCommunityIcons
                 name="share-variant"
@@ -115,7 +142,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Profile Section */}
+          {/* PROFILE */}
           <View style={styles.profileSection}>
             {user.imageUrl && (
               <Image
@@ -123,53 +150,131 @@ export default function ProfileScreen() {
                 style={styles.profileImage}
               />
             )}
+
             <Text style={styles.name}>{user.fullName}</Text>
             <Text style={styles.handle}>
               {user.emailAddresses[0].emailAddress}
             </Text>
 
             {user.unsafeMetadata?.bio && (
-              <Text style={styles.bio}>{user.unsafeMetadata?.bio}</Text>
+              <Text style={styles.bio}>
+                {user.unsafeMetadata.bio}
+              </Text>
             )}
 
-            {/* Stats */}
+            {/* STATS */}
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
-                  {user.unsafeMetadata?.booksets?.length || 0}
+                  {user.unsafeMetadata?.bsCount || 0}
                 </Text>
-                <Text style={styles.statLabel}>Booksets Uploaded</Text>
+                <Text style={styles.statLabel}>
+                  Items Uploaded
+                </Text>
+              </View>
+
+              <View style={styles.div} />
+
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {user.unsafeMetadata?.bsCountA || 0}
+                </Text>
+                <Text style={styles.statLabel}>
+                  Items Approved
+                </Text>
+              </View>
+
+              <View style={styles.div} />
+
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>
+                  {user.unsafeMetadata?.bsCount > 0
+                    ? Math.round(
+                      (user.unsafeMetadata.bsCountA /
+                        user.unsafeMetadata.bsCount) *
+                      100
+                    )
+                    : 0}
+                  %
+                </Text>
+                <Text style={styles.statLabel}>
+                  Acceptance Rate
+                </Text>
               </View>
             </View>
 
-            {/* Buttons */}
+            {/* BUTTON */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.primaryButton}
                 onPress={() =>
                   Alert.alert(
                     "Coming Soon",
-                    "This feature is not available yet."
+                    "Feature not available"
                   )
                 }
               >
-                <Text style={styles.primaryButtonText}>Edit Profile</Text>
+                <Text style={styles.primaryButtonText}>
+                  Edit Profile
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Booksets */}
+          {/* SECTION */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>My Booksets</Text>
+            <Text style={styles.sectionTitle}>My Uploads</Text>
 
-            {Booksets?.length > 0 ? (
-              Booksets.map((bookset, index) => (
+            {/* TABS */}
+            <View style={styles.tabsContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  activeTab === "approved" &&
+                  styles.activeTab,
+                ]}
+                onPress={() => setActiveTab("approved")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "approved" &&
+                    styles.activeTabText,
+                  ]}
+                >
+                  Approved
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  activeTab === "pending" &&
+                  styles.activeTab,
+                ]}
+                onPress={() => setActiveTab("pending")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "pending" &&
+                    styles.activeTabText,
+                  ]}
+                >
+                  Pending
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* LIST */}
+            {dataToShow.length > 0 ? (
+              dataToShow.map((bookset, index) => (
                 <View style={styles.bookCard} key={index}>
-                  
-                  {/* DELETE BUTTON */}
                   <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={() => handleDelete(bookset._id)}
+                    onPress={() =>
+                      handleDelete(bookset._id)
+                    }
                   >
                     <MaterialCommunityIcons
                       name="delete"
@@ -184,40 +289,70 @@ export default function ProfileScreen() {
                   />
 
                   <View style={styles.bookInfo}>
-                    <Text style={styles.bookTitle}>{bookset.title}</Text>
+                    <Text style={styles.bookTitle}>
+                      {bookset.title}
+                    </Text>
+
                     <Text style={styles.bookAuthor}>
                       Grade: {bookset.grade}
                     </Text>
+
                     <Text style={styles.progressText}>
-                      Subjects: {bookset.subjects.join(", ")}
+                      Subjects:{" "}
+                      {bookset.subjects.join(", ")}
                     </Text>
+
                     <Text style={styles.progressText}>
-                      Board: {bookset.board.toUpperCase()}
+                      Board:{" "}
+                      {bookset.board.toUpperCase()}
                     </Text>
+
                     <Text style={styles.progressText}>
                       Condition:{" "}
                       {bookset.condition[0].toUpperCase() +
                         bookset.condition.slice(1)}
+                    </Text>
+
+                    {/* STATUS */}
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        fontSize: 11,
+                        color:
+                          activeTab === "approved"
+                            ? "green"
+                            : "orange",
+                      }}
+                    >
+                      {activeTab === "approved"
+                        ? "Approved"
+                        : "Pending Approval"}
                     </Text>
                   </View>
                 </View>
               ))
             ) : (
               <Text style={styles.emptyText}>
-                No booksets uploaded yet.
+                No {activeTab} items.
               </Text>
             )}
           </View>
 
           <View style={styles.spacer} />
 
-          {/* Sign Out */}
+          {/* SIGN OUT */}
           <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
           >
-            <Text style={styles.primaryButtonText}>Sign Out</Text>
-            <MaterialCommunityIcons name="logout" size={18} color="#FFF" />
+            <Text style={styles.primaryButtonText}>
+              Sign Out
+            </Text>
+            <MaterialCommunityIcons
+              name="logout"
+              size={18}
+              color="#FFF"
+            />
           </TouchableOpacity>
         </ScrollView>
       )}
@@ -225,6 +360,7 @@ export default function ProfileScreen() {
   );
 }
 
+// STYLES
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -259,14 +395,11 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     marginBottom: 16,
-    borderWidth: 3,
-    borderColor: "#E8B4C8",
   },
 
   name: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#333",
   },
 
   handle: {
@@ -305,6 +438,11 @@ const styles = StyleSheet.create({
     color: "#999",
   },
 
+  div: {
+    width: 1,
+    backgroundColor: "#E0E0E0",
+  },
+
   buttonContainer: {
     flexDirection: "row",
     paddingHorizontal: 16,
@@ -326,6 +464,7 @@ const styles = StyleSheet.create({
   section: {
     marginTop: 24,
     paddingHorizontal: 16,
+    marginBottom: 16,
   },
 
   sectionTitle: {
@@ -334,13 +473,40 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
+  tabsContainer: {
+    flexDirection: "row",
+    marginTop: 12,
+    marginBottom: 18,
+    backgroundColor: "#eee",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+
+  activeTab: {
+    backgroundColor: "#0c92ffff",
+  },
+
+  tabText: {
+    color: "#555",
+    fontWeight: "600",
+  },
+
+  activeTabText: {
+    color: "#fff",
+  },
+
   bookCard: {
     flexDirection: "row",
     backgroundColor: "#FFF",
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
-    position: "relative",
   },
 
   deleteButton: {
@@ -379,9 +545,8 @@ const styles = StyleSheet.create({
   },
 
   emptyText: {
-    color: "#999",
     textAlign: "center",
-    fontStyle: "italic",
+    color: "#999",
   },
 
   spacer: {

@@ -48,7 +48,7 @@ export default function SocialAuth() {
           marginBottom: 20
         }}>
         <Image
-          source={require('../assets/images/g-logo.png')}
+          source={require('@/assets/images/g-logo.png')}
           style={{ width: 30, height: 30, marginRight: 12 }}
         />
         <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>

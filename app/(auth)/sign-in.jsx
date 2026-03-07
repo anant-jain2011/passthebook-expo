@@ -1,9 +1,10 @@
 import SocialAuth from "@/components/SocialAuth";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
-import React from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
 import {
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
@@ -39,44 +40,47 @@ export default function Page() {
     }
   };
 
+  // Example: Requesting permissions and getting token
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Sign In to PassTheBook</Text>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <SocialAuth />
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Enter email"
-          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-          keyboardType="email-address"
-          autoComplete="email"
-        />
-        <TextInput
-          style={styles.input}
-          value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-          autoComplete="password"
-        />
+        <KeyboardAvoidingView behavior="position">
+          <Text style={styles.title}>Sign In to PassTheBook</Text>
+          <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logo}
+          />
+          <SocialAuth />
+          <TextInput
+            style={styles.input}
+            autoCapitalize="none"
+            value={emailAddress}
+            placeholder="Enter email"
+            onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+            keyboardType="email-address"
+            autoComplete="email"
+          />
+          <TextInput
+            style={styles.input}
+            value={password}
+            placeholder="Enter password"
+            secureTextEntry={true}
+            onChangeText={(password) => setPassword(password)}
+            autoComplete="password"
+          />
 
-        <TouchableOpacity style={styles.button} onPress={onSignInPress}>
-          <Text style={styles.buttonText}>Continue</Text>
-        </TouchableOpacity>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <Link href="/sign-up" asChild>
-            <TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onSignInPress} disabled={!emailAddress || !password}>
+            <Text style={styles.buttonText}>Continue</Text>
+          </TouchableOpacity>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => router.replace('/sign-up')}>
               <Text style={styles.link}>Sign up</Text>
             </TouchableOpacity>
-          </Link>
-        </View>
+          </View>
+        </KeyboardAvoidingView>
       </View>
     </SafeAreaView>
   );

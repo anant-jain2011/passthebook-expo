@@ -44,24 +44,27 @@ const CustomTextInput = (props) => {
 export default function AddBooksScreen() {
   const ref = useRef();
   const { user } = useUser();
+  const insets = useSafeAreaInsets();
+  const [uris, setUris] = useState([]);
+  const [space, setSpace] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [fontsLoaded] = useFonts({
     Ionicons: require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"),
   });
-  const [uris, setUris] = useState([]);
-  const [space, setSpace] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const insets = useSafeAreaInsets();
+
   const [formData, setFormData] = useState({
     imgs: [],
     title: "",
     subjects: [""],
+    institution: "", // NEW
     grade: "",
+    type: "",
     board: "",
     condition: "",
+    price: "", // NEW
     giverDetails: {
-      ownerName: user.fullName,
-      email: user.emailAddresses[0].emailAddress,
-      whatsAppNum: user.phoneNumbers[0]?.phoneNumber || "",
+      id: user?.id,
+      ownerName: user?.fullName || "",
     },
   });
 
@@ -69,21 +72,28 @@ export default function AddBooksScreen() {
     imgs: false,
     title: false,
     subjects: [false],
+    institution: false, // NEW
     grade: false,
     condition: false,
     board: false,
+    type: false,
+    price: false, // NEW
     ownerName: false,
-    email: false,
-    whatsAppNum: false,
   });
 
   useEffect(() => {
     let backHandler = Keyboard.addListener("keyboardDidHide", () => {
-      setSpace(false);
+      setSpace(0);
       TextInput.State.currentlyFocusedInput()?.blur();
     });
+    let kbdHL = Keyboard.addListener("keyboardDidShow", (event) => {
+      setSpace(event.endCoordinates.height);
+    });
 
-    return () => backHandler.remove();
+    return () => {
+      backHandler.remove();
+      kbdHL.remove();
+    };
   }, []);
 
   const pickImage = async () => {
@@ -99,7 +109,7 @@ export default function AddBooksScreen() {
     if (!result.canceled) {
       let newImgs = [...formData.imgs];
 
-      result.assets.map(async (u) => {
+      result.assets.forEach((u) => {
         setUris((prevUris) => [...prevUris, u.uri]);
 
         newImgs.push(
@@ -128,12 +138,13 @@ export default function AddBooksScreen() {
       imgs: false,
       title: false,
       subjects: [],
+      institution: false,
       grade: false,
       condition: false,
       board: false,
+      type: false,
+      price: false,
       ownerName: false,
-      email: false,
-      whatsAppNum: false,
     };
 
     if (!formData.imgs || formData.imgs.length === 0)
@@ -143,23 +154,34 @@ export default function AddBooksScreen() {
     newErrors.subjects = formData.subjects.map((s) =>
       !s || s.trim() === "" ? "Required." : false
     );
-    if (!formData.grade) newErrors.grade = "Required.";
+
+    if (!formData.institution) newErrors.institution = "Required.";
+
+    if (formData.institution === "school" && !formData.grade)
+      newErrors.grade = "Required.";
+
     if (!formData.condition) newErrors.condition = "Required.";
     if (!formData.board) newErrors.board = "Required.";
+    if (!formData.type) newErrors.type = "Required.";
+
+    if (!formData.price) newErrors.price = "Required.";
+    else if (isNaN(formData.price)) newErrors.price = "Invalid price.";
+
     if (!formData.giverDetails.ownerName) newErrors.ownerName = "Required.";
-    if (!formData.giverDetails.email) newErrors.email = "Required.";
-    if (!formData.giverDetails.whatsAppNum) newErrors.whatsAppNum = "Required.";
+
+    setErrors(newErrors);
 
     const hasError = !!(
       newErrors.imgs ||
       newErrors.title ||
       newErrors.subjects.some((v) => v) ||
+      newErrors.institution ||
       newErrors.grade ||
       newErrors.condition ||
+      newErrors.type ||
       newErrors.board ||
-      newErrors.ownerName ||
-      newErrors.email ||
-      newErrors.whatsAppNum
+      newErrors.price ||
+      newErrors.ownerName
     );
 
     setErrors(newErrors);
@@ -170,7 +192,7 @@ export default function AddBooksScreen() {
     if (!validate()) {
       Alert.alert(
         "Empty fields!",
-        "All the details/fields must be filled before submitting."
+        "All the details/fields must be filled before submitting. " //+ JSON.stringify(errors)
       );
       return;
     }
@@ -178,8 +200,7 @@ export default function AddBooksScreen() {
     setLoading(true);
 
     try {
-      // TODO: Implement upload logic
-      let res = await fetch("http://ptb-backend.vercel.app/add-book", {
+      let res = await fetch("https://ptb-backend.vercel.app/add-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -192,7 +213,6 @@ export default function AddBooksScreen() {
       await user.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
-          hasUploadedBooks: true,
           booksets: [...(user.unsafeMetadata?.booksets || []), data.id],
           bsCount: (user.unsafeMetadata?.bsCount || 0) + 1,
         },
@@ -200,7 +220,7 @@ export default function AddBooksScreen() {
 
       console.log(data);
 
-      Alert.alert("Success", "Books uploaded successfully!");
+      Alert.alert("Success", "Requested " + formData.type + " uploaded successfully!");
     } catch (error) {
       Alert.alert("Error", "Failed to upload books as " + error.message);
       console.log(error.message);
@@ -210,8 +230,6 @@ export default function AddBooksScreen() {
   };
 
   const focusGVD = () => {
-    setSpace(true);
-
     ref.current.scrollToEnd({ animated: true, duration: 2000 });
   };
 
@@ -222,12 +240,13 @@ export default function AddBooksScreen() {
       >
         <ScrollView ref={ref}>
           <View style={styles.header}>
-            <Text style={styles.title}>Add Book Sets</Text>
+            <Text style={styles.title}>Request for Addition</Text>
             <Text style={styles.subtitle}>
               Share your books with the community
             </Text>
           </View>
 
+          {/* Upload */}
           <View style={styles.uploadSection}>
             <View style={[styles.uploadCard, errors.imgs && styles.inputError]}>
               <Ionicons name="images" size={48} color="#6366f1" />
@@ -243,16 +262,13 @@ export default function AddBooksScreen() {
               </TouchableOpacity>
             </View>
 
-            {errors.imgs ? (
+            {errors.imgs && (
               <Text style={styles.errorText}>{errors.imgs}</Text>
-            ) : null}
+            )}
           </View>
 
-          <ScrollView
-            horizontal={true}
-            style={styles.selectedSection}
-            showsHorizontalScrollIndicator={false}
-          >
+          {/* Images */}
+          <ScrollView horizontal style={styles.selectedSection}>
             {!!uris.length &&
               uris.map((uri, index) => (
                 <View style={styles.imgCont} key={index}>
@@ -275,6 +291,23 @@ export default function AddBooksScreen() {
               ))}
           </ScrollView>
 
+          <CustomTextInput
+            placeholder="Your Name"
+            value={formData.giverDetails.ownerName}
+            onFocus={focusGVD}
+            onChangeText={(text) => {
+              setFormData({
+                ...formData,
+                giverDetails: {
+                  ...formData.giverDetails,
+                  ownerName: text,
+                },
+              });
+              setErrors((prev) => ({ ...prev, ownerName: false }));
+            }}
+            error={errors.ownerName}
+          />
+
           <View style={styles.formSection}>
             <Text style={styles.sectionTitle}>Book Details</Text>
 
@@ -288,16 +321,17 @@ export default function AddBooksScreen() {
               error={errors.title}
             />
 
+            {/* Subjects */}
             <View
               style={{
-                display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginInline: 6,
+                marginHorizontal: 6,
+                marginBottom: 8,
               }}
             >
-              <Text>Add Subjects: </Text>
+              <Text>Add Subjects:</Text>
 
               <TouchableOpacity
                 style={{
@@ -306,10 +340,11 @@ export default function AddBooksScreen() {
                   borderRadius: 4,
                 }}
                 onPress={() => {
-                  setFormData({
-                    ...formData,
-                    subjects: [...formData.subjects, ""],
-                  });
+                  setFormData((prev) => ({
+                    ...prev,
+                    subjects: [...prev.subjects, ""],
+                  }));
+
                   setErrors((prev) => ({
                     ...prev,
                     subjects: [...(prev.subjects || []), false],
@@ -320,43 +355,164 @@ export default function AddBooksScreen() {
               </TouchableOpacity>
             </View>
 
-            {formData.subjects &&
-              formData.subjects.map((subj, idx) => (
-                <CustomTextInput
-                  key={idx}
-                  placeholder={`Subject ${idx + 1}`}
-                  value={subj}
-                  onChangeText={(text) => {
-                    const newSubjects = [...formData.subjects];
-                    newSubjects[idx] = text;
-                    setFormData({ ...formData, subjects: newSubjects });
-                    setErrors((prev) => ({
-                      ...prev,
-                      subjects: (prev.subjects || []).map((v, i) =>
-                        i === idx ? false : v
-                      ),
-                    }));
-                  }}
-                  error={errors.subjects?.[idx]}
-                />
-              ))}
+            {formData.subjects.map((subj, idx) => (
+              <View
+                key={idx}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                {/* Input */}
+                <View style={{ flex: 1 }}>
+                  <CustomTextInput
+                    placeholder={`Subject ${idx + 1}`}
+                    value={subj}
+                    onChangeText={(text) => {
+                      const newSubjects = [...formData.subjects];
+                      newSubjects[idx] = text;
 
-            <CustomTextInput
-              placeholder="Grade (1-12)"
-              keyboardType="numeric"
-              maxLength={2}
-              value={formData.grade}
-              onFocus={() => setSpace(true)}
-              onChangeText={(text) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        subjects: newSubjects,
+                      }));
+
+                      setErrors((prev) => ({
+                        ...prev,
+                        subjects: (prev.subjects || []).map((v, i) =>
+                          i === idx ? false : v
+                        ),
+                      }));
+                    }}
+                    error={errors.subjects?.[idx]}
+                  />
+                </View>
+
+                {/* Remove Button */}
+                {formData.subjects.length > 1 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      const newSubjects = [...formData.subjects];
+                      const newErrors = [...(errors.subjects || [])];
+
+                      newSubjects.splice(idx, 1);
+                      newErrors.splice(idx, 1);
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        subjects: newSubjects,
+                      }));
+
+                      setErrors((prev) => ({
+                        ...prev,
+                        subjects: newErrors,
+                      }));
+                    }}
+                    style={{
+                      padding: 6,
+                    }}
+                  >
+                    <Ionicons name="remove-circle" size={24} color="red" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))}
+
+            {/* Institution */}
+            <Picker
+              selectedValue={formData.institution}
+              style={[styles.input, errors.institution && styles.inputError]}
+              onValueChange={(institution) => {
                 setFormData({
                   ...formData,
-                  grade: text == "0" ? "1" : +text < "12" ? text : "12",
+                  institution,
+                  grade:
+                    institution === "school" ? formData.grade : "",
                 });
-                setErrors((prev) => ({ ...prev, grade: false }));
+                setErrors((prev) => ({
+                  ...prev,
+                  institution: false,
+                }));
               }}
-              error={errors.grade}
+            >
+              <Picker.Item label=" -- Select Institution -- " value="" />
+              <Picker.Item label="School" value="school" />
+              <Picker.Item label="College" value="college" />
+              <Picker.Item label="Coaching" value="coaching" />
+              <Picker.Item label="Other" value="other" />
+            </Picker>
+
+            {/* Grade (only school) */}
+            {formData.institution === "school" &&
+              <>
+                <CustomTextInput
+                  placeholder="Grade (1-12)"
+                  keyboardType="numeric"
+                  maxLength={2}
+                  value={formData.grade}
+                  onChangeText={(text) => {
+                    setFormData({
+                      ...formData,
+                      grade:
+                        text === "0"
+                          ? "1"
+                          : +text > 12
+                            ? "12"
+                            : text,
+                    });
+                    setErrors((prev) => ({ ...prev, grade: false }));
+                  }}
+                  error={errors.grade}
+                />
+
+                <Picker
+                  selectedValue={formData.board}
+                  style={[styles.input, errors.board && styles.inputError]}
+                  onValueChange={(board) => {
+                    setFormData({ ...formData, board });
+                    setErrors((prev) => ({ ...prev, board: false }));
+                  }}
+                >
+                  <Picker.Item label=" -- Select Board -- " value="" />
+                  <Picker.Item label="CBSE" value="cbse" />
+                  <Picker.Item label="ICSE" value="icse" />
+                  <Picker.Item label="NCERT" value="ncert" />
+                  <Picker.Item label="State Board" value="state_board" />
+                </Picker>
+              </>
+            }
+
+            {/* Price */}
+            <CustomTextInput
+              placeholder="Price (₹)"
+              keyboardType="numeric"
+              value={formData.price}
+              onChangeText={(text) => {
+                setFormData({ ...formData, price: text });
+                setErrors((prev) => ({ ...prev, price: false }));
+              }}
+              error={errors.price}
             />
 
+            {/* Type */}
+            <Picker
+              selectedValue={formData.type}
+              style={[styles.input, errors.type && styles.inputError]}
+              onValueChange={(type) => {
+                setFormData({ ...formData, type });
+                setErrors((prev) => ({ ...prev, type: false }));
+              }}
+            >
+              <Picker.Item label=" -- Select Type -- " value="" />
+              <Picker.Item label="New" value="new" />
+              <Picker.Item label="Single Book" value="single_book" />
+              <Picker.Item label="Book Set" value="book_set" />
+              <Picker.Item label="PYQs" value="pyqs" />
+              <Picker.Item label="Notes" value="notes" />
+            </Picker>
+
+            {/* Condition */}
             <Picker
               selectedValue={formData.condition}
               style={[styles.input, errors.condition && styles.inputError]}
@@ -365,113 +521,21 @@ export default function AddBooksScreen() {
                 setErrors((prev) => ({ ...prev, condition: false }));
               }}
             >
-              <Picker.Item
-                style={styles.input}
-                label=" -- Select Condition -- "
-                value=""
-              />
-              <Picker.Item style={styles.input} label="   New" value="new" />
-              <Picker.Item
-                style={styles.input}
-                label="   Like New"
-                value="like_new"
-              />
-              <Picker.Item
-                style={styles.input}
-                label="   Used - Good"
-                value="used_good"
-              />
-              <Picker.Item
-                style={styles.input}
-                label="   Used - Acceptable"
-                value="used_acceptable"
-              />
-              <Picker.Item
-                style={styles.input}
-                label="   Used - Poor"
-                value="poor"
-              />
+              <Picker.Item label=" -- Select Condition -- " value="" />
+              <Picker.Item label="New" value="new" />
+              <Picker.Item label="Like New" value="like_new" />
+              <Picker.Item label="Used Good" value="used_good" />
+              <Picker.Item label="Acceptable" value="used_acceptable" />
+              <Picker.Item label="Poor" value="poor" />
             </Picker>
-
-            <Picker
-              selectedValue={formData.board}
-              style={[styles.input, errors.board && styles.inputError]}
-              onValueChange={(board) => {
-                setFormData({ ...formData, board });
-                setErrors((prev) => ({ ...prev, board: false }));
-              }}
-            >
-              <Picker.Item
-                style={styles.input}
-                label=" -- Select Board -- "
-                value=""
-              />
-              <Picker.Item style={styles.input} label="   CBSE" value="cbse" />
-              <Picker.Item style={styles.input} label="   ICSE" value="icse" />
-              <Picker.Item
-                style={styles.input}
-                label="   NCERT"
-                value="ncert"
-              />
-              <Picker.Item
-                style={styles.input}
-                label="   UK Board"
-                value="uk_board"
-              />
-            </Picker>
-
-            <Text style={styles.sectionTitle}>Giver Details</Text>
-
-            <CustomTextInput
-              placeholder="Your Name"
-              value={formData.giverDetails.ownerName}
-              onFocus={focusGVD}
-              onChangeText={(text) => {
-                setFormData({
-                  ...formData,
-                  giverDetails: { ...formData.giverDetails, ownerName: text },
-                });
-                setErrors((prev) => ({ ...prev, ownerName: false }));
-              }}
-              error={errors.ownerName}
-            />
-
-            <CustomTextInput
-              placeholder="Email"
-              keyboardType="email-address"
-              value={formData.giverDetails.email}
-              onFocus={focusGVD}
-              onChangeText={(text) => {
-                setFormData({
-                  ...formData,
-                  giverDetails: { ...formData.giverDetails, email: text },
-                });
-                setErrors((prev) => ({ ...prev, email: false }));
-              }}
-              error={errors.email}
-            />
-
-            <CustomTextInput
-              placeholder="WhatsApp Number"
-              keyboardType="phone-pad"
-              value={formData.giverDetails.whatsAppNum}
-              onFocus={focusGVD}
-              onChangeText={(text) => {
-                setFormData({
-                  ...formData,
-                  giverDetails: { ...formData.giverDetails, whatsAppNum: text },
-                });
-                setErrors((prev) => ({ ...prev, whatsAppNum: false }));
-              }}
-              error={errors.whatsAppNum}
-            />
           </View>
+
 
           <TouchableOpacity
             style={[
               styles.submitBtn,
               loading && styles.submitBtnDisabled,
-              space && { marginBottom: 195 },
+              space && { marginBottom: space - insets.bottom },
             ]}
             onPress={handleUpload}
             disabled={loading}
@@ -480,8 +544,14 @@ export default function AddBooksScreen() {
               <ActivityIndicator color="white" />
             ) : (
               <>
-                <Ionicons name="checkmark-circle" size={20} color="white" />
-                <Text style={styles.submitBtnText}>Upload Books</Text>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={20}
+                  color="white"
+                />
+                <Text style={styles.submitBtnText}>
+                  Confirm Request
+                </Text>
               </>
             )}
           </TouchableOpacity>
@@ -490,6 +560,8 @@ export default function AddBooksScreen() {
     )
   );
 }
+
+// (styles unchanged)
 
 const styles = StyleSheet.create({
   container: {
@@ -650,4 +722,3 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 });
-

@@ -19,7 +19,8 @@
         "backgroundImage": "./assets/images/icon.png",
         "monochromeImage": "./assets/images/icon.png"
       },
-      "package": "com.anantjain2011.passthebookexpo"
+      "package": "com.anantjain2011.passthebookexpo",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -38,7 +39,9 @@
         }
       ],
       "expo-web-browser",
-      "expo-secure-store"
+      "expo-notifications",
+      "expo-secure-store",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

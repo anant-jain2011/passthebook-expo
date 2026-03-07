@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "753017319268",
+    "project_id": "my-project-93f05",
+    "storage_bucket": "my-project-93f05.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753017319268:android:21e758bde5939e16255471",
+        "android_client_info": {
+          "package_name": "com.anantjain2011.passthebookexpo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt-RCXvy8SKI8SQcolSg45kUuQuen-VvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753017319268:android:4ea5c0e15411f017255471",
+        "android_client_info": {
+          "package_name": "com.mykomapany.freemessengerforandroid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt-RCXvy8SKI8SQcolSg45kUuQuen-VvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

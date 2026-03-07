@@ -1,11 +1,15 @@
-import { Link } from "expo-router";
-import TypedText from "@/components/TypedText";
-import Feather from "@expo/vector-icons/Feather";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { ScrollView, StyleSheet } from "react-native";
+import TypedText from "@/components/TypedText";
+import { useUser } from "@clerk/clerk-expo";
+import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { Link } from "expo-router";
+import { useEffect } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // const featuredBooks = [
@@ -49,6 +53,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  // const { user } = useUser();
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>

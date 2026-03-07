@@ -12,39 +12,17 @@ import {
   View,
 } from "react-native";
 import Carousel from "./Carousel";
+import { useRouter } from "expo-router";
 
 const BookCard = ({ book }) => {
-  const [imgs] = useState(book.imgs || []);
   const [crl, setCrl] = useState(false);
+  const [imgs] = useState(book.imgs || []);
   const [subjects] = useState(book.subjects || []);
   const [giverDetails] = useState(book.giverDetails || {});
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [showEmailHint, setShowEmailHint] = useState(false);
-  const [showWhatsAppHint, setShowWhatsAppHint] = useState(false);
+  const router = useRouter();
 
-  const handleContact = () => {
-    if (giverDetails.email) {
-      Linking.openURL(
-        `mailto:${giverDetails.email}?subject=${encodeURIComponent(
-          "Interested in " + book.title
-        )}`
-      );
-    } else if (giverDetails.whatsAppNum) {
-      const num = (giverDetails.whatsAppNum + "").replace(/\D/g, "");
-      Linking.openURL(
-        `https://wa.me/${num}?text=${encodeURIComponent(
-          "Hi " +
-            giverDetails.ownerName +
-            ", I am interested in your " +
-            book.title
-        )}`
-      );
-    } else {
-      Alert.alert(
-        "No contact info",
-        "This owner has not provided contact details."
-      );
-    }
+  const handleClick = () => {
+    router.push(`/items/${book._id}`);
   };
 
   const boardColors = {
@@ -67,11 +45,12 @@ const BookCard = ({ book }) => {
 
   return (
     <>
-      <View style={styles.card}>
+      <Pressable style={styles.card} onPress={handleClick}>
+        {/* <View style={styles.card} onPress={handleClick}> */}
         <View style={styles.cardContent}>
           <Text style={styles.subjectBadge}>{subjects.join(", ")}</Text>
 
-          <View style={styles.cardRow}>
+          <View>
             <TouchableOpacity onPress={() => setCrl(true)}>
               <Image source={{ uri: imgs[0] }} style={styles.bookImage} />
             </TouchableOpacity>
@@ -126,158 +105,9 @@ const BookCard = ({ book }) => {
               {getConditionColor(book.condition)[2]}
             </Text>
           </View>
-
-          {/* Contact */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.contactButton,
-              pressed && styles.contactButtonPressed,
-            ]}
-            onPress={() => setShowContactForm(true)}
-          >
-            <Text style={styles.contactButtonText}>Contact Owner</Text>
-            <Entypo name="chevron-thin-right" size={18} color="white" />
-          </Pressable>
         </View>
+      </Pressable>
 
-        {showContactForm && (
-          <View style={styles.formOverlay}>
-            <View style={styles.formContainer}>
-              <View style={styles.formHeader}>
-                <Text style={styles.formTitle}>
-                  Contact {giverDetails.ownerName}
-                </Text>
-                <Pressable onPress={() => setShowContactForm(false)}>
-                  <Entypo name="cross" size={22} color="#6b7280" />
-                </Pressable>
-              </View>
-
-              <View style={styles.giverDetails}>
-                <Text style={styles.giverLabel}>Contact details</Text>
-                <Text style={styles.giverName}>
-                  <Text style={styles.formTitle}>Giver Name: </Text>{" "}
-                  {giverDetails.ownerName}
-                </Text>
-
-                {giverDetails.email ? (
-                  <Pressable
-                    style={styles.detailRow}
-                    onPress={() =>
-                      Linking.openURL(
-                        `mailto:${
-                          giverDetails.email
-                        }?subject=${encodeURIComponent(
-                          `Interested in ${book.title}`
-                        )}`
-                      )
-                    }
-                    accessibilityLabel={`${giverDetails.email}. Tap to open email.`}
-                  >
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Text style={styles.detailLabel}>Email</Text>
-                      <Pressable
-                        onPress={() => {
-                          setShowEmailHint(true);
-                          setTimeout(() => setShowEmailHint(false), 2500);
-                        }}
-                        hitSlop={8}
-                        style={{ marginLeft: 8 }}
-                      >
-                        <Entypo
-                          name="info-with-circle"
-                          size={16}
-                          color="#6b7280"
-                        />
-                      </Pressable>
-                    </View>
-
-                    <Text style={styles.detailText}>{giverDetails.email}</Text>
-
-                    {showEmailHint && (
-                      <View style={styles.tooltip} pointerEvents="none">
-                        <Text style={styles.tooltipText}>
-                          Tap to open email
-                        </Text>
-                      </View>
-                    )}
-                  </Pressable>
-                ) : null}
-
-                {giverDetails.whatsAppNum ? (
-                  <Pressable
-                    style={styles.detailRow}
-                    onPress={() => {
-                      const num = (giverDetails.whatsAppNum + "").replace(
-                        /\D/g,
-                        ""
-                      );
-                      Linking.openURL(
-                        `https://wa.me/${num}?text=${encodeURIComponent(
-                          `Hi ${giverDetails.ownerName}, I'm interested in your ${book.title}`
-                        )}`
-                      );
-                    }}
-                    accessibilityLabel={`${giverDetails.whatsAppNum}. Tap to open WhatsApp.`}
-                  >
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Text style={styles.detailLabel}>WhatsApp</Text>
-                      <Pressable
-                        onPress={() => {
-                          setShowWhatsAppHint(true);
-                          setTimeout(() => setShowWhatsAppHint(false), 2500);
-                        }}
-                        hitSlop={8}
-                        style={{ marginLeft: 8 }}
-                      >
-                        <Entypo
-                          name="info-with-circle"
-                          size={16}
-                          color="#6b7280"
-                        />
-                      </Pressable>
-                    </View>
-
-                    <Text style={styles.detailText}>
-                      {giverDetails.whatsAppNum}
-                    </Text>
-
-                    {showWhatsAppHint && (
-                      <View style={styles.tooltip} pointerEvents="none">
-                        <Text style={styles.tooltipText}>
-                          Tap to open WhatsApp
-                        </Text>
-                      </View>
-                    )}
-                  </Pressable>
-                ) : null}
-              </View>
-
-              <View style={styles.formActions}>
-                <Pressable
-                  style={styles.cancelButton}
-                  onPress={() => setShowContactForm(false)}
-                >
-                  <Text style={styles.cancelButtonText}>Back</Text>
-                </Pressable>
-                <Pressable style={styles.submitButton} onPress={handleContact}>
-                  <Text style={styles.submitButtonText}>
-                    {giverDetails.email
-                      ? "Email"
-                      : giverDetails.whatsAppNum
-                      ? "WhatsApp"
-                      : "OK"}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        )}
-      </View>
-      
       {crl && <Carousel images={imgs} onClose={() => setCrl(false)} />}
     </>
   );
@@ -287,218 +117,144 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    marginBottom: 12,
+    width: "49%",
+    marginRight: "3%",
     elevation: 4,
+    // flex: 1, // 🔥 grid support
   },
+
   cardContent: {
-    padding: 16,
+    padding: 12,
   },
+
+  // REMOVE row layout
   cardRow: {
-    flexDirection: "row",
-    gap: 16,
+    flexDirection: "column", // 🔥 column layout
   },
+
+  // FULL WIDTH IMAGE
   bookImage: {
-    width: 120,
-    height: 170,
-    borderRadius: 14,
+    width: "100%",
+    height: 160,
+    borderRadius: 12,
+    marginBottom: 10,
   },
+
   cardInfo: {
-    flex: 1,
+    width: "100%",
   },
+
   subjectBadge: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: "600",
     color: "#0284c7",
     backgroundColor: "#e0f2fe",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 20,
     alignSelf: "flex-start",
-    marginBottom: 10,
+    marginBottom: 6,
   },
+
+  // FIX THIS ❌ width: "fit-content" not supported
+  boardBadge: {
+    fontSize: 10,
+    fontWeight: "700",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+    marginBottom: 6,
+  },
+
   headerSection: {
-    marginTop: 20,
+    marginTop: 4,
   },
+
   bookTitle: {
-    fontSize: 20,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
     color: "#111827",
-    marginBottom: 8,
+    marginBottom: 6,
   },
+
   gradeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
+    marginBottom: 4,
   },
+
   gradeText: {
-    fontSize: 15,
-    color: "#374151",
-    fontWeight: "500",
-  },
-  boardBadge: {
     fontSize: 12,
-    fontWeight: "700",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    width: "fit-content",
-    alignSelf: "flex-end",
+    color: "#374151",
   },
+
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginTop: 14,
+    gap: 6,
+    marginTop: 4,
   },
+
   infoText: {
-    fontSize: 15,
+    fontSize: 12,
     color: "#4b5563",
-    fontWeight: "500",
   },
+
   conditionSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginTop: 16,
-  },
-  conditionLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#6b7280",
-  },
-  conditionBadge: {
-    fontSize: 13,
-    fontWeight: "700",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-  },
-  contactButton: {
-    marginTop: 18,
-    backgroundColor: "#0ea5e9",
-    paddingVertical: 14,
-    borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  contactButtonPressed: {
-    backgroundColor: "#0284c7",
-  },
-  contactButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
+    gap: 6,
+    marginTop: 8,
   },
 
-  /* FORM */
-  formOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  formContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-    padding: 20,
-  },
-  formHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 10,
-    padding: 14,
-    minHeight: 100,
-    marginBottom: 16,
-  },
-  giverDetails: {
-    marginBottom: 16,
-  },
-  giverLabel: {
-    fontSize: 14,
+  conditionLabel: {
+    fontSize: 11,
     color: "#6b7280",
-    marginBottom: 6,
   },
-  giverName: {
-    fontSize: 18,
-    fontWeight: "400",
-    marginBottom: 10,
-  },
-  detailRow: {
-    position: "relative",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 10,
-    marginBottom: 8,
-  },
-  tooltip: {
-    position: "absolute",
-    top: -36,
-    right: 12,
-    backgroundColor: "#111827",
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  tooltipText: {
-    color: "#fff",
-    fontSize: 12,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: "#6b7280",
+
+  conditionBadge: {
+    fontSize: 11,
     fontWeight: "600",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
-  detailText: {
-    fontSize: 14,
-    color: "#0ea5e9",
-    fontWeight: "700",
-  },
+
   formActions: {
+    marginTop: 10,
     flexDirection: "row",
-    gap: 12,
+    gap: 8,
   },
+
   submitButton: {
     flex: 1,
     backgroundColor: "#0ea5e9",
-    padding: 14,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
     alignItems: "center",
   },
+
   submitButtonText: {
     color: "#fff",
     fontWeight: "700",
+    fontSize: 12,
   },
+
   cancelButton: {
     flex: 1,
     borderWidth: 1,
     borderColor: "#d1d5db",
-    padding: 14,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
     alignItems: "center",
   },
+
   cancelButtonText: {
     color: "#6b7280",
     fontWeight: "600",
+    fontSize: 12,
   },
 });
 

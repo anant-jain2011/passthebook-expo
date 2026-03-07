@@ -1,9 +1,9 @@
-import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
-import { tokenCache } from '@clerk/clerk-expo/token-cache';
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import { tokenCache } from '@clerk/clerk-expo/token-cache';
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -20,6 +20,7 @@ const RootLayout = () => {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="oauth-native-callback" options={{ headerShown: false }} />
+            <Stack.Screen name="items/[id]" options={{ headerShown: false }} />
           </Stack>
         </SignedIn>
 
@@ -27,6 +28,7 @@ const RootLayout = () => {
           <Stack>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="oauth-native-callback" options={{ headerShown: false }} />
+            <Stack.Screen name="items/[id]" options={{ headerShown: false }} />
           </Stack>
         </SignedOut>
         <StatusBar style="auto" />
