@@ -40,45 +40,71 @@ export default function ChatsScreen() {
     };
   }, [messages]);
 
-  const handleSend = () => {
-    if (input.trim()) {
-      let msg = { content: input, role: "user" };
+  const handleSend = async () => {
+  if (!input.trim()) return;
 
-      let newMsgs = [...messages, msg, { content: "...", role: "assistant" }];
+  const userMsg = { content: input, role: "user" };
 
-      setMessages(newMsgs);
+  const newMsgs = [
+    ...messages,
+    userMsg,
+    { content: "...", role: "assistant" },
+  ];
 
-      fetch(
-        "https://api.perplexity.ai/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            Authorization:
-              "Bearer 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",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "sonar",
-            messages: [...messages, msg],
-            max_tokens: 250,
-          }),
-        }
-      ).then((res) => res.json()).then((data) => {
-        setMessages(prevMsgs => {
-          const updatedMsgs = [...prevMsgs];
-          updatedMsgs[updatedMsgs.length - 1] = {
-            ...updatedMsgs[updatedMsgs.length - 1],
-            content: data.choices[0].message.content.replace(/\*\*/g, ""),
-          };
-          return updatedMsgs;
-        });
-      });
+  setMessages(newMsgs);
+  setInput("");
 
-      //router.push("/chats-screen");
+  try {
+    const res = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: [...messages, userMsg]
+                    .map((m) => `${m.role}: ${m.content}`)
+                    .join("\n"),
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
-      setInput("");
-    }
-  };
+    const data = await res.json();
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response";
+
+    setMessages((prevMsgs) => {
+      const updated = [...prevMsgs];
+      updated[updated.length - 1] = {
+        role: "assistant",
+        content: reply.replace(/\*\*/g, ""),
+      };
+      return updated;
+    });
+  } catch (err) {
+    console.error(err);
+
+    setMessages((prevMsgs) => {
+      const updated = [...prevMsgs];
+      updated[updated.length - 1] = {
+        role: "assistant",
+        content: "Error fetching response",
+      };
+      return updated;
+    });
+  }
+};
 
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: -insets.bottom }]}>
