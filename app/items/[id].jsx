@@ -170,7 +170,7 @@ export default function BookDetails() {
             router.push("/profile-ext?id=" + book.giverDetails.id)
           }
         >
-          <Text style={styles.buyText}>Buy Now</Text>
+          <Text style={styles.buyText}>View Seller Profile</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -112,8 +112,10 @@ export default function FindBooks() {
 
         {fOpen &&
           <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-start", gap: "2%" }}>
-            <TextInput placeholder="Search by subject" name="Subject" value={filters["subject"]} cVal={filters["subject"]} onChangeText={(text) => filter("subjects", text)} style={styles.dropdown} />
-            <TextInput placeholder="Search by grade" name="Grade" keyboardType="numeric" value={filters["grade"]} cVal={filters["grade"]} onChangeText={(value) => filter("grade", value.toString())} style={styles.dropdown} />
+            <TextInput placeholderTextColor={"#999"} placeholder="Search by subject" name="Subject" value={filters["subject"]} cVal={filters["subject"]} onChangeText={(text) => filter("subjects", text)} style={styles.dropdown} />
+
+            <TextInput placeholderTextColor={"#999"} placeholder="Search by grade" name="Grade" keyboardType="numeric" value={filters["grade"]} cVal={filters["grade"]} onChangeText={(value) => filter("grade", value.toString())} style={styles.dropdown} />
+
             <Picky name="Condition" values={[
               { "value": null, "label": "No filter" },
               { "value": "new", "label": "New" },
@@ -234,6 +236,7 @@ const styles = StyleSheet.create({
     width: '49%',
     display: 'flex',
     justifyContent: 'center',
+    color: "#000",
     // alignItems: 'center',
     borderColor: 'gray',
     borderWidth: 0.6,

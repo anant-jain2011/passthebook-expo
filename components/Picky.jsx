@@ -25,7 +25,7 @@ const Picky = ({ name, values, cVal, onChange, dStyles }) => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? `Select ${name}` : '...'}
+          placeholder={!isFocus ? `${name}` : '...'}
           searchPlaceholder="Search..."
           value={cVal}
           onFocus={() => setIsFocus(true)}
