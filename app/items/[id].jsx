@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -10,9 +10,12 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addToCart } from "../../utils/funcs";
+
+const { width } = Dimensions.get("window");
 
 export default function BookDetails() {
   const { id } = useLocalSearchParams();
@@ -21,86 +24,115 @@ export default function BookDetails() {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /* ================= FETCH ================= */
+
   useEffect(() => {
-    console.log("Fetching details for book ID:", id);
+    let mounted = true;
+
     (async () => {
       try {
-        let res = await fetch(
+        const res = await fetch(
           `https://ptb-backend.vercel.app/get-books?id=${id}`
         );
-        let data = await res.json();
-        setBook(data[0]);
+        const data = await res.json();
+
+        if (mounted) setBook(data[0]);
       } catch (e) {
         console.log(e);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, [id]);
+
+  /* ================= CONDITION ================= */
+
+  const cond = useMemo(() => {
+    const map = {
+      new: ["#dcfce7", "#0c77b1", "New"],
+      like_new: ["#fef3c7", "#d97706", "Like New"],
+      used_good: ["#fce7f3", "#be185d", "Used - Good"],
+      used_acceptable: ["#fed7aa", "#ea580c", "Used - Acceptable"],
+      poor: ["#fecaca", "#dc2626", "Poor"],
+    };
+    return map[book?.condition] || map["used_good"];
+  }, [book]);
+
+  /* ================= LOADING ================= */
 
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#0ea5e9" />
+        <ActivityIndicator size="large" color="#1a9ee5" />
       </View>
     );
   }
 
   if (!book) return null;
 
-  const conditionColors = {
-    new: ["#dcfce7", "#16a34a", "New"],
-    like_new: ["#fef3c7", "#d97706", "Like New"],
-    used_good: ["#fce7f3", "#be185d", "Used - Good"],
-    used_acceptable: ["#fed7aa", "#ea580c", "Used - Acceptable"],
-    poor: ["#fecaca", "#dc2626", "Poor"],
-  };
-
-  const cond = conditionColors[book.condition];
+  /* ================= UI ================= */
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Text style={{ fontSize: 18 }}>
-            <MaterialCommunityIcons name="arrow-left" size={20} color="#0ea5e9" />
-          </Text>
-        </TouchableOpacity>
+      {/* BACK */}
+      <TouchableOpacity
+        style={styles.backBtn}
+        onPress={() => router.back()}
+      >
+        <MaterialCommunityIcons
+          name="arrow-left"
+          size={22}
+          color="#111"
+        />
+      </TouchableOpacity>
 
-        {/* 📸 Images */}
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
-          {book.imgs.map((uri, i) => (
-            <Image key={i} source={{ uri }} style={styles.image} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* 📸 IMAGE CAROUSEL */}
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+        >
+          {book.imgs.map((uri,i) => (
+            <Image
+              key={i}
+              source={{ uri }}
+              style={styles.image}
+            />
           ))}
         </ScrollView>
 
-        {/* 📄 Info */}
+        {/* 📄 CONTENT */}
         <View style={styles.content}>
-
           <Text style={styles.title}>{book.title}</Text>
 
+          {/* ROWS */}
           <View style={styles.row}>
-            <FontAwesome name="book" size={16} color="#0ea5e9" />
+            <FontAwesome name="book" size={16} color="#0c77b1" />
             <Text style={styles.text}>Grade {book.grade}</Text>
           </View>
 
           <View style={styles.row}>
-            <FontAwesome name="user-circle" size={16} color="#0ea5e9" />
+            <FontAwesome name="user-circle" size={16} color="#0c77b1" />
             <Text style={styles.text}>
               By {book.giverDetails?.ownerName}
             </Text>
           </View>
 
-          {/* Subjects */}
+          {/* TAGS */}
           <View style={styles.tags}>
-            {book.subjects.map((s, i) => (
+            {book.subjects.map((s,i) => (
               <Text key={i} style={styles.tag}>
                 {s}
               </Text>
             ))}
           </View>
 
-          {/* Condition */}
+          {/* CONDITION */}
           <View style={styles.conditionBox}>
             <Text style={styles.conditionLabel}>Condition</Text>
             <Text
@@ -113,22 +145,31 @@ export default function BookDetails() {
             </Text>
           </View>
 
-          {/* Board */}
+          {/* BOARD */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Board</Text>
             <Text style={styles.sectionText}>{book.board}</Text>
           </View>
-
         </View>
       </ScrollView>
 
-      {/* 🔥 Sticky Bottom */}
+      {/* 🔥 BOTTOM BAR */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.cartBtn} onPress={() => addToCart(book)}>
+        <TouchableOpacity
+          style={styles.cartBtn}
+          activeOpacity={0.8}
+          onPress={() => addToCart(book)}
+        >
           <Text style={styles.cartText}>Add to Cart</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buyBtn} onPress={() => router.push("/profile-ext?id=" + book.giverDetails.id)}>
+        <TouchableOpacity
+          style={styles.buyBtn}
+          activeOpacity={0.8}
+          onPress={() =>
+            router.push("/profile-ext?id=" + book.giverDetails.id)
+          }
+        >
           <Text style={styles.buyText}>Buy Now</Text>
         </TouchableOpacity>
       </View>
@@ -136,10 +177,12 @@ export default function BookDetails() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f9fafb",
   },
 
   loader: {
@@ -151,18 +194,18 @@ const styles = StyleSheet.create({
   backBtn: {
     position: "absolute",
     top: 10,
-    left: 10,
+    left: 16,
     zIndex: 10,
     backgroundColor: "#fff",
-    padding: 8,
-    borderRadius: 20,
-    elevation: 5,
+    padding: 10,
+    borderRadius: 50,
+    elevation: 6,
   },
 
   image: {
-    width: 200,
-    height: 300,
-    resizeMode: "contain",
+    width: width,
+    height: 280,
+    resizeMode: "cover",
   },
 
   content: {
@@ -178,11 +221,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
     marginBottom: 6,
   },
 
   text: {
+    marginLeft: 8,
     fontSize: 14,
     color: "#374151",
   },
@@ -190,29 +233,30 @@ const styles = StyleSheet.create({
   tags: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
     marginTop: 10,
   },
 
   tag: {
-    backgroundColor: "#e0f2fe",
-    color: "#0284c7",
+    backgroundColor: "#dcfce7",
+    color: "#0c77b1",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
     fontSize: 12,
+    marginRight: 8,
+    marginBottom: 6,
   },
 
   conditionBox: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 14,
-    gap: 10,
   },
 
   conditionLabel: {
     fontSize: 14,
     color: "#6b7280",
+    marginRight: 10,
   },
 
   conditionBadge: {
@@ -229,12 +273,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: "700",
-    marginBottom: 4,
   },
 
   sectionText: {
     fontSize: 14,
     color: "#374151",
+    marginTop: 4,
   },
 
   bottomBar: {
@@ -249,7 +293,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#e5e7eb",
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: "center",
     marginRight: 6,
   },
@@ -260,9 +304,9 @@ const styles = StyleSheet.create({
 
   buyBtn: {
     flex: 1,
-    backgroundColor: "#0ea5e9",
+    backgroundColor: "#0c77b1",
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: "center",
     marginLeft: 6,
   },

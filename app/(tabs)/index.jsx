@@ -1,298 +1,344 @@
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import TypedText from "@/components/TypedText";
 import { useUser } from "@clerk/clerk-expo";
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import { Link } from "expo-router";
-import { useEffect } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { Link, useRouter } from "expo-router";
+import {
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// const featuredBooks = [
-//   {
-//     id: "1",
-//     title: "Mathematics NCERT",
-//     subjects: ["Mathematics"],
-//     grade: "10",
-//     condition: "like_new",
-//     location: "Delhi",
-//     board: "cbse",
-//     imgs: ["https://via.placeholder.com/100x140"],
-//     giverDetails: { ownerName: "Aditya S." },
-//     createdAt: "2023-05-15",
-//   },
-//   {
-//     id: "2",
-//     title: "Science NCERT",
-//     subjects: ["Science"],
-//     grade: "9",
-//     condition: "used_good",
-//     location: "Mumbai",
-//     board: "cbse",
-//     imgs: ["https://via.placeholder.com/100x140"],
-//     giverDetails: { ownerName: "Priya K." },
-//     createdAt: "2023-06-02",
-//   },
-//   {
-//     id: "3",
-//     title: "English Literature",
-//     subjects: ["English"],
-//     grade: "11",
-//     condition: "used_acceptable",
-//     location: "Bangalore",
-//     board: "cbse",
-//     imgs: ["https://via.placeholder.com/100x140"],
-//     giverDetails: { ownerName: "Rahul M." },
-//     createdAt: "2023-06-10",
-//   },
-// ];
+/* ================= COMPONENT ================= */
+
+const Action = ({
+  icon,
+  label,
+}) => (
+  <View style={styles.actionItem}>
+    <Feather name={icon} size={22} color="#34b7d1" />
+    <ThemedText style={styles.actionText}>{label}</ThemedText>
+  </View>
+);
+
+/* ================= SCREEN ================= */
 
 export default function HomeScreen() {
+  const { user } = useUser();
   const insets = useSafeAreaInsets();
-  // const { user } = useUser();
+  const router = useRouter();
 
   return (
-    <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.screen}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       {/* ===== HEADER ===== */}
-      <ThemedView style={[styles.header, { paddingTop: insets.top }]}>
-        <Feather name="book-open" size={36} color="#fff" />
-        <ThemedText style={styles.headerTitle}>PassTheBook</ThemedText>
-      </ThemedView>
+      <View style={[styles.header, { marginTop: insets.top }]}>
+        <Feather name="menu" size={24} color="#111" />
 
-      {/* ===== HERO ===== */}
-      <ThemedView style={{ paddingHorizontal: 16 }}>
-        <ThemedText style={styles.heroBadge}>
-          Share Knowledge, Save Trees
+        <View style={styles.headerCenter}>
+          <Feather name="book-open" size={26} color="#0c77b1" />
+          <ThemedText style={styles.headerTitle}>
+            PassTheBook
+          </ThemedText>
+        </View>
+
+        <View style={styles.headerRight}>
+          <Feather
+            name="bell"
+            size={22}
+            color="#111"
+            style={{ marginRight: 12 }}
+            onPress={() => router.push("/notifications")}
+          />
+          <Feather name="shopping-cart" size={22} color="#111" onPress={() => router.push("/cart")} />
+        </View>
+      </View>
+
+      {/* ===== GREETING ===== */}
+      <View style={styles.padding}>
+        <ThemedText style={styles.greeting}>
+          Hello, {user?.firstName} 👋
         </ThemedText>
-
-        <ThemedText style={styles.heroSubtitle}>
-          <TypedText texts={["Connect.", "Exchange.", "Make a Difference."]} />
+        <ThemedText style={styles.subText}>
+          Find affordable books. Sell to students.
         </ThemedText>
+      </View>
 
-        <Link href="/find-books" style={styles.primaryBtn}>
-          <ThemedText style={styles.primaryBtnText}>
-            Find Textbooks →
-          </ThemedText>
-        </Link>
+      {/* ===== SEARCH ===== */}
+      <View style={styles.searchBar}>
+        <Feather name="search" size={20} color="#999" />
+        <TextInput
+          placeholder="Search books, subjects..."
+          style={styles.input}
+          placeholderTextColor="#9ca3af"
+        />
+        <Feather name="sliders" size={20} color="#1687a3" />
+      </View>
 
-        <Link href="/add-books" style={styles.secondaryBtn}>
-          <ThemedText style={styles.secondaryBtnText}>
-            List Your Books
-          </ThemedText>
-        </Link>
-      </ThemedView>
+      {/* ===== ACTIONS ===== */}
+      <View style={styles.actions}>
+        <Action icon="book" label="Books" />
+        <Action icon="tag" label="Sell" />
+        <Action icon="bookmark" label="Orders" />
+        <Action icon="heart" label="Wishlist" />
+      </View>
 
-      {/* ===== WHY PASS THE BOOK ===== */}
-      <ThemedView style={{ padding: 16 }}>
-        <ThemedView style={styles.featureCard}>
-          <Feather name="book-open" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>
-            Accessible Education
+      {/* ===== BANNER ===== */}
+      <View style={styles.banner}>
+        <View>
+          <ThemedText style={styles.bannerTitle}>
+            A Smarter way to exchange books.
           </ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Making textbooks available to every student in India.
-          </ThemedText>
-        </ThemedView>
 
-        <ThemedView style={styles.featureCard}>
-          <FontAwesome name="recycle" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>Reduce Waste</ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Giving textbooks a second life reduces paper waste.
-          </ThemedText>
-        </ThemedView>
+          <Link href="/find-books" style={styles.bannerBtn}>
+            <ThemedText style={styles.bannerBtnText}>
+              Explore Now →
+            </ThemedText>
+          </Link>
+        </View>
+      </View>
 
-        <ThemedView style={styles.featureCard}>
-          <Feather name="heart" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>
-            Community Building
-          </ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Connecting students to help each other succeed.
-          </ThemedText>
-        </ThemedView>
-      </ThemedView>
-
-      {/* ===== HOW IT WORKS ===== */}
-      <ThemedView style={{ padding: 16 }}>
-        <ThemedText style={styles.sectionBadge}>Simple Process</ThemedText>
+      {/* ===== BOOKS ===== */}
+      <View style={styles.padding}>
         <ThemedText style={styles.sectionTitle}>
-          How PassTheBook Works
-        </ThemedText>
-        <ThemedText style={styles.sectionDesc}>
-          Exchange textbooks in three simple steps and help students across
-          India.
+          Why PassTheBook?
         </ThemedText>
 
-        <ThemedView style={styles.featureCard}>
-          <Feather name="search" size={32} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>Find Books</ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Search by subject, grade, or location to find books near you.
-          </ThemedText>
-        </ThemedView>
+        <View style={styles.infoGrid}>
 
-        <ThemedView style={styles.featureCard}>
-          <Feather name="upload" size={32} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>List Books</ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Upload your books and help someone who needs them.
-          </ThemedText>
-        </ThemedView>
+          <View style={styles.infoCard}>
+            <Feather name="book-open" size={24} color="#0c77b1" />
+            <ThemedText style={styles.infoTitle}>
+              Affordable Books
+            </ThemedText>
+            <ThemedText style={styles.infoDesc}>
+              Buy second-hand books at the best prices.
+            </ThemedText>
+          </View>
 
-        <ThemedView style={styles.featureCard}>
-          <FontAwesome5 name="users" size={28} color="#0ea5e9" />
-          <ThemedText style={styles.featureTitle}>Connect</ThemedText>
-          <ThemedText style={styles.featureDesc}>
-            Contact book owners and arrange an exchange easily.
-          </ThemedText>
-        </ThemedView>
-      </ThemedView>
+          <View style={styles.infoCard}>
+            <Feather name="repeat" size={24} color="#0c77b1" />
+            <ThemedText style={styles.infoTitle}>
+              Reuse & Save
+            </ThemedText>
+            <ThemedText style={styles.infoDesc}>
+              Give books a second life and reduce waste.
+            </ThemedText>
+          </View>
 
-      {/* ===== FEATURED BOOKS ===== */}
-      {/* <ThemedView style={{ padding: 16 }}>
-        <ThemedText style={styles.sectionTitle}>Featured Books</ThemedText>
+          <View style={styles.infoCard}>
+            <Feather name="shield" size={24} color="#0c77b1" />
+            <ThemedText style={styles.infoTitle}>
+              Safe Listings
+            </ThemedText>
+            <ThemedText style={styles.infoDesc}>
+              Admin approval ensures quality content.
+            </ThemedText>
+          </View>
 
-        <ThemedView style={styles.bookList}>
-          {featuredBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </ThemedView>
-      </ThemedView> */}
+          <View style={styles.infoCard}>
+            <Feather name="shopping-bag" size={24} color="#0c77b1" />
+            <ThemedText style={styles.infoTitle}>
+              Easy Buying
+            </ThemedText>
+            <ThemedText style={styles.infoDesc}>
+              Seamless checkout like an e-commerce app.
+            </ThemedText>
+          </View>
 
-      {/* ===== CTA ===== */}
-      <ThemedView style={{ padding: 24 }}>
-        <ThemedText style={styles.sectionTitle}>
-          Ready to Make a Difference?
-        </ThemedText>
-        <ThemedText style={styles.sectionDesc}>
-          Join thousands of students making education more accessible.
-        </ThemedText>
-
-        <Link href="/find-books" style={styles.primaryBtn}>
-          <ThemedText style={styles.primaryBtnText}>Find Textbooks</ThemedText>
-        </Link>
-
-        <Link href="/add-books" style={styles.secondaryBtn}>
-          <ThemedText style={styles.secondaryBtnText}>
-            List Your Books
-          </ThemedText>
-        </Link>
-      </ThemedView>
+        </View>
+      </View>
     </ScrollView>
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
     backgroundColor: "#f8fafc",
   },
-  header: {
-    backgroundColor: "#0ea5e9",
-    paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    elevation: 6,
-  },
-  headerTitle: {
-    fontSize: 36,
-    fontWeight: "800",
-    color: "#fff",
-    marginLeft: 8,
-    lineHeight: 60,
-  },
-  heroBadge: {
-    backgroundColor: "#e0f2fe",
-    color: "#0369a1",
-    borderRadius: 999,
-    alignSelf: "center",
+
+  padding: {
     paddingHorizontal: 16,
-    paddingVertical: 6,
-    fontWeight: "700",
-    marginTop: 24,
-  },
-  heroSubtitle: {
-    textAlign: "center",
-    fontSize: 22,
-    fontWeight: "600",
-    marginTop: 22,
-    marginVertical: 10,
-    height: 26,
-  },
-  primaryBtn: {
-    backgroundColor: "#0ea5e9",
-    paddingVertical: 12,
-    borderRadius: 999,
-    alignItems: "center",
-    marginTop: 12,
-  },
-  primaryBtnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  secondaryBtn: {
-    borderWidth: 1,
-    borderColor: "#0ea5e9",
-    paddingVertical: 12,
-    borderRadius: 999,
-    alignItems: "center",
-    textAlign: "center",
-    marginTop: 12,
-  },
-  secondaryBtnText: {
-    color: "#0ea5e9",
-    fontWeight: "700",
-  },
-  featureCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 24,
-    marginTop: 16,
-    elevation: 4,
-  },
-  featureTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginTop: 12,
-  },
-  featureDesc: {
-    color: "#6b7280",
-    marginTop: 6,
-    lineHeight: 22,
-  },
-  sectionBadge: {
-    backgroundColor: "#e0f2fe",
-    color: "#0369a1",
-    alignSelf: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 999,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 30,
-    fontWeight: "800",
-    textAlign: "center",
-    marginBottom: 12,
-    lineHeight: 36,
-  },
-  sectionDesc: {
-    textAlign: "center",
-    color: "#6b7280",
-    lineHeight: 22,
   },
 
-  bookList: {
-    marginTop: 16,
+  /* HEADER */
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
+
+  headerCenter: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginLeft: 6,
+  },
+
+  /* GREETING */
+  greeting: {
+    marginTop: 10,
+    fontSize: 22,
+    fontWeight: "700",
+  },
+
+  subText: {
+    color: "#6b7280",
+    marginTop: 4,
+  },
+
+  /* SEARCH */
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    margin: 16,
+    padding: 12,
+    borderRadius: 14,
+    elevation: 3,
+  },
+
+  input: {
+    flex: 1,
+    marginHorizontal: 10,
+    fontSize: 14,
+    color: "#444"
+  },
+
+  /* ACTIONS */
+  actions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+
+  actionItem: {
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 14,
+    width: 70,
+    elevation: 3,
+  },
+
+  actionText: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+
+  /* BANNER */
+  banner: {
+    margin: 16,
+    backgroundColor: "#dcfafc",
+    borderRadius: 20,
+    padding: 20,
+  },
+
+  bannerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  bannerSub: {
+    marginTop: 6,
+    color: "#065f46",
+  },
+
+  bannerBtn: {
+    backgroundColor: "#00b1e2",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    marginTop: 12,
+    alignSelf: "flex-start",
+  },
+
+  bannerBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+
+  /* BOOKS */
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 10,
+  },
+
+  bookCard: {
+    width: 140,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 10,
+    marginRight: 12,
+    elevation: 3,
+  },
+
+  bookImg: {
+    height: 120,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 10,
+  },
+
+  bookTitle: {
+    marginTop: 8,
+    fontWeight: "600",
+  },
+
+  price: {
+    marginTop: 4,
+    color: "#0f9bff",
+    fontWeight: "700",
+  },
+
+  infoGrid: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+},
+
+infoCard: {
+  width: "48%",
+  backgroundColor: "#fff",
+  borderRadius: 16,
+  padding: 14,
+  marginBottom: 12,
+
+  shadowColor: "#000",
+  shadowOpacity: 0.05,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 3,
+},
+
+infoTitle: {
+  marginTop: 8,
+  fontSize: 14,
+  fontWeight: "700",
+},
+
+infoDesc: {
+  marginTop: 4,
+  fontSize: 12,
+  color: "#6b7280",
+  lineHeight: 16,
+},
 });

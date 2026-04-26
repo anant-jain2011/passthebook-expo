@@ -291,10 +291,15 @@ export default function AddBooksScreen() {
               ))}
           </ScrollView>
 
+            <Text style={styles.sectionTitle2}>Your Name</Text>
+
           <CustomTextInput
             placeholder="Your Name"
             value={formData.giverDetails.ownerName}
             onFocus={focusGVD}
+            style={{
+              marginInline: 16
+            }}
             onChangeText={(text) => {
               setFormData({
                 ...formData,
@@ -651,6 +656,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0f172a",
     marginBottom: 12,
+  },
+  sectionTitle2: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0f172a",
+    marginBottom: 12,
+    paddingInline: 16
   },
   bookItem: {
     flexDirection: "row",

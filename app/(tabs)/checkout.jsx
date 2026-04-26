@@ -102,7 +102,7 @@ export default function CheckoutScreen() {
                         </TouchableOpacity>
                     )}
                     {discount > 0 && (
-                        <Text style={styles.discountText}>✓ {parseInt((discount/subtotal)*100)}% Discount applied: - ₹{discount.toFixed(2)}</Text>
+                        <Text style={styles.discountText}>✓ {parseInt((discount / subtotal) * 100)}% Discount applied: - ₹{discount.toFixed(2)}</Text>
                     )}
                 </View>
 

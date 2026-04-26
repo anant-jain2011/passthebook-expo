@@ -56,7 +56,7 @@ export default function ChatsScreen() {
 
   try {
     const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyB45pKCB3r3H90Wvcgj8b1taz7qhK0KChI",
       {
         method: "POST",
         headers: {
@@ -81,8 +81,8 @@ export default function ChatsScreen() {
     const data = await res.json();
 
     const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response";
+      data && data.candidates[0].content.parts[0].text ||
+      "No response, try again!";
 
     setMessages((prevMsgs) => {
       const updated = [...prevMsgs];

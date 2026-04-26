@@ -25,6 +25,7 @@ export default function NotificationsScreen() {
             // Replace with your actual API endpoint
             const response = await fetch('https://ptb-backend.vercel.app/get-notifications?userId=' + user.id);
             const data = await response.json();
+            console.log(data)
 
             setNotifications(data);
         } catch (error) {
@@ -37,8 +38,8 @@ export default function NotificationsScreen() {
     const renderNotification = ({ item }) => (
         <View style={styles.notificationCard}>
             <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.timestamp}>{item.timestamp}</Text>
+            <Text style={styles.message}>{item.body}</Text>
+            <Text style={styles.timestamp}>{(new Date(item.updatedAt)).toDateString()}</Text>
         </View>
     );
 
