@@ -296,7 +296,6 @@ export default function AddBooksScreen() {
           <CustomTextInput
             placeholder="Your Name"
             value={formData.giverDetails.ownerName}
-            onFocus={focusGVD}
             style={{
               marginInline: 16
             }}
