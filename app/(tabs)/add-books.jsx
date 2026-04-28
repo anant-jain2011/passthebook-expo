@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { PhotoIcon } from "react-native-heroicons/solid";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -229,10 +230,6 @@ export default function AddBooksScreen() {
     }
   };
 
-  const focusGVD = () => {
-    ref.current.scrollToEnd({ animated: true, duration: 2000 });
-  };
-
   return (
     fontsLoaded && (
       <SafeAreaView
@@ -249,7 +246,7 @@ export default function AddBooksScreen() {
           {/* Upload */}
           <View style={styles.uploadSection}>
             <View style={[styles.uploadCard, errors.imgs && styles.inputError]}>
-              <Ionicons name="images" size={48} color="#6366f1" />
+              <PhotoIcon size={48} color="#6366f1" />
               <Text style={styles.uploadTitle}>Upload Book Covers</Text>
               <Text style={styles.uploadDesc}>PNG, JPG up to 10MB</Text>
               <TouchableOpacity
@@ -291,7 +288,7 @@ export default function AddBooksScreen() {
               ))}
           </ScrollView>
 
-            <Text style={styles.sectionTitle2}>Your Name</Text>
+          <Text style={styles.sectionTitle2}>Your Name</Text>
 
           <CustomTextInput
             placeholder="Your Name"

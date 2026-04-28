@@ -13,9 +13,9 @@ export default function ChatsScreen() {
   const [messages, setMessages] = useState([
     {
       content: `PassTheBook is an app in which users can share books with each other.
-      For example, if Student A of grade 8 wants the book of 8th grade and a Student B of grade 9th is ready to give his books, the both students A & B can share their books through the app. For uploading books, the user can click on 'Add Books' Button and has to take a picture of the book and upload it on the app with some details like book name, board, grade, condition of the book etc. After uploading, other users can see the book and contact the person who has uploaded the books if they want to take that book. For finding books, the user can click on 'Find Books' Button and can see all the books uploaded by other users. The user can filter the books according to their needs like board, grade etc. If the user finds a book they want, they can contact the person who has uploaded the books through the contact details provided in the book details. The app also has a chat feature where users can chat with a bot to understand how to use the app effectively.
+      For example, if Student A of grade 8 wants the book of 8th grade and a Student B of grade 9th is ready to give his books, the both students A & B can share their books through the app. For uploading books, the user can click on 'Add Books' Button and has to take a picture of the book and upload it on the app with some details like book name, board, grade, condition of the book etc. After uploading, other users can see the book and contact the person who has uploaded the books if they want to take that book. For finding books, the user can click on 'Find Books' Button and can see all the books uploaded by other users. The user can filter the books according to their needs like board, grade etc. If the user finds a book they want, they can contact the person who has uploaded the books through the contact details provided in the book details. The app also has a chat feature where users can chat with a bot to understand how to use the app effectively and that is you.
 
-      You are a helpful assistant that helps users understand the features and functionalities of PassTheBook, a book sharing application. You can use the above explanation to provide clear and concise answers to user queries about how to use the app effectively, do not use the exact sentences used above, rephrase the sentences. If you don't know the answer, politely inform the user that you are unable to assist with that question. Always maintain a friendly and approachable tone. Always deny but in a polite manner if the user asks for anything irrelevant to the usage or the working of the PassTheBook. Do not include special characters like @,#,^,&,*,[] or citations or references to anything other than PassTheBook in your responses.`,
+      You are a helpful assistant that helps users understand the features and functionalities of PassTheBook, a book sharing application. You can use the above explanation to provide clear and concise answers to user queries about how to use the app effectively, do not use the exact sentences used above, rephrase the sentences. If you don't know the answer, politely inform the user that you are unable to assist with that question. Always maintain a friendly and approachable tone. Always deny but in a polite manner if the user asks for anything irrelevant to the usage or the working of the PassTheBook, but if the user uses a different language, speak in the language the user is comfortable talking in. Do not include special characters like @,#,^,&,*,[] or citations or references to anything other than PassTheBook in your responses.`,
       role: "system",
     },
     {
@@ -55,8 +55,10 @@ export default function ChatsScreen() {
   setInput("");
 
   try {
+    console.log(process.env.EXPO_PUBLIC_API);
+    
     const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyB45pKCB3r3H90Wvcgj8b1taz7qhK0KChI",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key="+process.env.EXPO_PUBLIC_API,
       {
         method: "POST",
         headers: {
@@ -79,9 +81,11 @@ export default function ChatsScreen() {
     );
 
     const data = await res.json();
+    console.log(data);
+    
 
     const reply =
-      data && data.candidates[0].content.parts[0].text ||
+      data ? data?.candidates[0]?.content?.parts[0].text :
       "No response, try again!";
 
     setMessages((prevMsgs) => {
