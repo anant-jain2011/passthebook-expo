@@ -124,7 +124,7 @@ export default function CartScreen() {
     return (
       <SafeAreaView style={styles.emptyWrapper}>
         <Image
-          source={require("@/assets/images/loading.avif")}
+          source={require("@/assets/images/not-found.avif")}
           style={{ width: "90%", height: 350 }}
         />
         <Text style={styles.emptyText}>Your cart is empty</Text>

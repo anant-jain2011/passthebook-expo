@@ -1,11 +1,11 @@
-import { Image } from "expo-image";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+// import { Image } from "expo-image";
+// import { useFocusEffect, useRouter } from "expo-router";
+// import { useCallback, useEffect, useState } from "react";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import {
+//   SafeAreaView,
+//   useSafeAreaInsets,
+// } from "react-native-safe-area-context";
 import {
   FlatList,
   StyleSheet,
@@ -15,76 +15,76 @@ import {
 } from "react-native";
 
 export default function WishlistScreen() {
-  const [wishlist, setWishlist] = useState([]);
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
+  // const [wishlist, setWishlist] = useState([]);
+  // const insets = useSafeAreaInsets();
+  // const router = useRouter();
 
-  useEffect(() => {
-    loadWishlist();
-  }, []);
+  // useEffect(() => {
+  //   loadWishlist();
+  // }, []);
 
-  const loadWishlist = async () => {
-    const data = await AsyncStorage.getItem("wishlist");
-    if (data) setWishlist(JSON.parse(data));
-  };
+  // const loadWishlist = async () => {
+  //   const data = await AsyncStorage.getItem("wishlist");
+  //   if (data) setWishlist(JSON.parse(data));
+  // };
 
-  const removeItem = async (id) => {
-    const updated = wishlist.filter((item) => item.id !== id);
-    setWishlist(updated);
-    await AsyncStorage.setItem("wishlist", JSON.stringify(updated));
-  };
+  // const removeItem = async (id) => {
+  //   const updated = wishlist.filter((item) => item.id !== id);
+  //   setWishlist(updated);
+  //   await AsyncStorage.setItem("wishlist", JSON.stringify(updated));
+  // };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+  // const renderItem = ({ item }) => (
+  //   <View style={styles.card}>
+  //     <Image source={{ uri: item.image }} style={styles.image} />
 
-      <Text numberOfLines={2} style={styles.title}>
-        {item.title}
-      </Text>
+  //     <Text numberOfLines={2} style={styles.title}>
+  //       {item.title}
+  //     </Text>
 
-      <Pressable style={styles.heart} onPress={() => removeItem(item.id)}>
-        <FontAwesome name="heart" size={20} color="red" />
-      </Pressable>
+  //     <Pressable style={styles.heart} onPress={() => removeItem(item.id)}>
+  //       <FontAwesome name="heart" size={20} color="red" />
+  //     </Pressable>
+  //   </View>
+  // );
+
+  // // ✅ Empty cart UI
+  // if (!wishlist.length) {
+  return (
+    <View style={styles.emptyWrapper}>
+      {/* // <Image
+        //   source={require("@/assets/images/wishlist.webp")}
+        //   style={{ width: "90%", height: 350 }}
+        // /> */}
+      <Text style={styles.emptyText}>Your wishlist is empty...</Text>
     </View>
   );
-  
-  // ✅ Empty cart UI
-  if (!wishlist.length) {
-    return (
-      <SafeAreaView style={styles.emptyWrapper}>
-        <Image
-          source={require("@/assets/images/wishlist.webp")}
-          style={{ width: "90%", height: 350 }}
-        />
-        <Text style={styles.emptyText}>Your wishlist is empty, for now 👀</Text>
-      </SafeAreaView>
-    );
-  }
+  // }
 
-  return (
-    <SafeAreaView style={[styles.container, { paddingBottom: -insets.bottom }]}>
-      <Text style={styles.title}>Shopping Cart</Text>
+  // return (
+  //   <SafeAreaView style={[styles.container, { paddingBottom: -insets.bottom }]}>
+  //     <Text style={styles.title}>Shopping Cart</Text>
 
-      <FlatList
-        data={wishlist}
-        renderItem={renderItem}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={{ paddingBottom: 0 }}
-      />
+  //     <FlatList
+  //       data={wishlist}
+  //       renderItem={renderItem}
+  //       keyExtractor={(item) => item._id}
+  //       contentContainerStyle={{ paddingBottom: 0 }}
+  //     />
 
-      <View style={styles.footer}>
-        <Text style={styles.totalLabel}>Total:</Text>
-        <Text style={styles.totalPrice}>₹{total.toFixed(2)}</Text>
-      </View>
+  //     <View style={styles.footer}>
+  //       <Text style={styles.totalLabel}>Total:</Text>
+  //       <Text style={styles.totalPrice}>₹{total.toFixed(2)}</Text>
+  //     </View>
 
-      <TouchableOpacity
-        style={styles.checkoutBtn}
-        onPress={() => router.push("/checkout")}
-      >
-        <Text style={styles.checkoutText}>Proceed to Checkout</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
+  //     <TouchableOpacity
+  //       style={styles.checkoutBtn}
+  //       onPress={() => router.push("/checkout")}
+  //     >
+  //       <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+  //     </TouchableOpacity>
+  //   </SafeAreaView>
+  // );
 }
 
 const styles = StyleSheet.create({
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
     fontSize: 24,
     fontWeight: "600",
-    textAlign: "center"
+    textAlign: "center",
   },
 
   cartItem: {
