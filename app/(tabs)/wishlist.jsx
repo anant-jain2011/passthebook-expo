@@ -14,120 +14,49 @@ import {
   View,
 } from "react-native";
 
-export default function CartScreen() {
-  const [cartItems, setCartItems] = useState([]);
+export default function WishlistScreen() {
+  const [wishlist, setWishlist] = useState([]);
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  // ✅ Load cart ONLY once
-  useFocusEffect(
-    useCallback(() => {
-      loadCart();
-    }, [])
-  );
-
   useEffect(() => {
-    loadCart();
+    loadWishlist();
   }, []);
 
-  const loadCart = async () => {
-    const value = await AsyncStorage.getItem("cart");
-    if (value) {
-      const parsed = JSON.parse(value);
-
-      // ✅ Remove duplicates (important)
-      const uniqueItems = parsed.filter(
-        (item, index, self) =>
-          index === self.findIndex((i) => i._id === item._id)
-      );
-
-      setCartItems(uniqueItems);
-    }
+  const loadWishlist = async () => {
+    const data = await AsyncStorage.getItem("wishlist");
+    if (data) setWishlist(JSON.parse(data));
   };
 
-  // ❌ No quantity → just remove
   const removeItem = async (id) => {
-    await AsyncStorage.setItem(
-      "cart",
-      JSON.stringify(cartItems.filter((item) => item._id !== id))
-    );
-    setCartItems((prev) => prev.filter((item) => item._id !== id));
+    const updated = wishlist.filter((item) => item.id !== id);
+    setWishlist(updated);
+    await AsyncStorage.setItem("wishlist", JSON.stringify(updated));
   };
-
-  const total = cartItems.reduce(
-    (sum, item) => sum + Number(item.price || 0),
-    0
-  );
 
   const renderItem = ({ item }) => (
-    <View style={styles.cartItem}>
-      <View>
-        <View style={styles.cartItemRow}>
-          <Image
-            source={{ uri: item.imgs?.[0] }}
-            style={styles.cartItemImage}
-          />
+    <View style={styles.card}>
+      <Image source={{ uri: item.image }} style={styles.image} />
 
-          <View style={styles.itemInfo}>
-            <Text
-              style={[
-                styles.boardBadge,
-                {
-                  backgroundColor: "#e0f2fe",
-                  color: "#0284c7",
-                },
-              ]}
-            >
-              {item.board.toUpperCase()}
-            </Text>
+      <Text numberOfLines={2} style={styles.title}>
+        {item.title}
+      </Text>
 
-            <View>
-              <Text style={styles.cartItemTitle} numberOfLines={2}>
-                {item.title}
-              </Text>
-
-              {/* show grade only if exists */}
-              {!!item.grade && (
-                <Text style={styles.cartItemGrade}>Grade {item.grade}</Text>
-              )}
-            </View>
-
-            <View style={styles.cartItemMeta}>
-              <Text style={styles.cartItemPrice}>₹{item.price}</Text>
-              <Text style={styles.cartItemBy}>
-                By {item.giverDetails.ownerName}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.flexer}>
-          <View style={styles.cartItemCondition}>
-            <Text style={styles.conditionLabel}>Condition:</Text>
-            <Text style={styles.conditionBadge}>{item.condition}</Text>
-          </View>
-
-          {/* ✅ Only remove button */}
-          <TouchableOpacity
-            style={styles.removeBtn}
-            onPress={() => removeItem(item._id)}
-          >
-            <Text style={styles.removeBtnText}>Remove</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Pressable style={styles.heart} onPress={() => removeItem(item.id)}>
+        <FontAwesome name="heart" size={20} color="red" />
+      </Pressable>
     </View>
   );
-
+  
   // ✅ Empty cart UI
-  if (!cartItems.length) {
+  if (!wishlist.length) {
     return (
       <SafeAreaView style={styles.emptyWrapper}>
         <Image
-          source={require("@/assets/images/loading.avif")}
+          source={require("@/assets/images/wishlist.webp")}
           style={{ width: "90%", height: 350 }}
         />
-        <Text style={styles.emptyText}>Your cart is empty</Text>
+        <Text style={styles.emptyText}>Your wishlist is empty, for now 👀</Text>
       </SafeAreaView>
     );
   }
@@ -137,7 +66,7 @@ export default function CartScreen() {
       <Text style={styles.title}>Shopping Cart</Text>
 
       <FlatList
-        data={cartItems}
+        data={wishlist}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={{ paddingBottom: 0 }}
@@ -183,6 +112,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
     fontSize: 24,
     fontWeight: "600",
+    textAlign: "center"
   },
 
   cartItem: {

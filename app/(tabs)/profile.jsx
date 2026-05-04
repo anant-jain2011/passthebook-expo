@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { Path, Svg } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
 
@@ -70,38 +71,28 @@ export default function ProfileScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            const safeId = encodeURIComponent(
-              booksetId.toString().trim()
-            );
+            const safeId = encodeURIComponent(booksetId.toString().trim());
 
-            await fetch(
-              "https://ptb-backend.vercel.app/delete?id=" + safeId
-            );
+            await fetch("https://ptb-backend.vercel.app/delete?id=" + safeId);
 
-            const updatedIds =
-              user.unsafeMetadata?.booksets.filter(
-                (id) => id !== booksetId
-              );
+            const updatedIds = user.unsafeMetadata?.booksets.filter(
+              (id) => id !== booksetId
+            );
 
             let metaData = {
               ...user.unsafeMetadata,
               booksets: updatedIds,
-            }
+            };
 
             // Remove from both lists
             if (approved.includes(booksetId)) {
               metaData["bsCountA"] = approved.length - 1;
-              
-              setApproved((prev) =>
-                prev.filter((b) => b._id !== booksetId)
-              );
-            }
-            else {
+
+              setApproved((prev) => prev.filter((b) => b._id !== booksetId));
+            } else {
               metaData["bsCount"] = pending.length - 1;
-              
-              setPending((prev) =>
-                prev.filter((b) => b._id !== booksetId)
-              );
+
+              setPending((prev) => prev.filter((b) => b._id !== booksetId));
             }
 
             await user.update({
@@ -120,11 +111,12 @@ export default function ProfileScreen() {
     await signOut();
   };
 
-  const dataToShow =
-    activeTab === "approved" ? approved : pending;
+  const dataToShow = activeTab === "approved" ? approved : pending;
 
   return (
-    <SafeAreaView style={{ ...styles.container, paddingBottom: -insets.bottom }}>
+    <SafeAreaView
+      style={{ ...styles.container, paddingBottom: -insets.bottom }}
+    >
       {user && (
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* HEADER */}
@@ -133,21 +125,38 @@ export default function ProfileScreen() {
               style={styles.settingsButton}
               onPress={() => router.push("/notifications")}
             >
-              <MaterialCommunityIcons
-                name="bell-outline"
-                size={30}
-                color="#333"
-              />
+              <Svg
+                stroke="currentColor"
+                fill="none"
+                strokeWidth={1.8}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                height="28px"
+                width="28px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                />
+              </Svg>
             </TouchableOpacity>
 
             <Text style={styles.headerTitle}>Profile</Text>
 
-            <TouchableOpacity style={styles.settingsButton}>
-              <MaterialCommunityIcons
-                name="share-variant"
-                size={24}
-                color="#333"
-              />
+            <TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/(tabs)/wishlist")}>
+              <Svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth={0.8}
+                viewBox="0 0 24 24"
+                height="30px"
+                width="30px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path d="M12 20.043a.977.977 0 01-.7-.288L4.63 13.08a5.343 5.343 0 011.423-8.567A5.266 5.266 0 0112 5.371a5.272 5.272 0 015.947-.858 5.343 5.343 0 011.423 8.567l-6.676 6.675a.977.977 0 01-.694.288zM8.355 4.963a4.015 4.015 0 00-1.844.437 4.4 4.4 0 00-2.389 3.243 4.345 4.345 0 001.215 3.73l6.675 6.675 6.651-6.675a4.345 4.345 0 001.215-3.73A4.4 4.4 0 0017.489 5.4a4.338 4.338 0 00-4.968.852h0a.744.744 0 01-1.042 0 4.474 4.474 0 00-3.124-1.289z" />
+              </Svg>
             </TouchableOpacity>
           </View>
 
@@ -166,9 +175,7 @@ export default function ProfileScreen() {
             </Text>
 
             {user.unsafeMetadata?.bio && (
-              <Text style={styles.bio}>
-                {user.unsafeMetadata.bio}
-              </Text>
+              <Text style={styles.bio}>{user.unsafeMetadata.bio}</Text>
             )}
 
             {/* STATS */}
@@ -177,9 +184,7 @@ export default function ProfileScreen() {
                 <Text style={styles.statNumber}>
                   {user.unsafeMetadata?.bsCount || 0}
                 </Text>
-                <Text style={styles.statLabel}>
-                  Items Uploaded
-                </Text>
+                <Text style={styles.statLabel}>Items Uploaded</Text>
               </View>
 
               <View style={styles.div} />
@@ -188,9 +193,7 @@ export default function ProfileScreen() {
                 <Text style={styles.statNumber}>
                   {user.unsafeMetadata?.bsCountA || 0}
                 </Text>
-                <Text style={styles.statLabel}>
-                  Items Approved
-                </Text>
+                <Text style={styles.statLabel}>Items Approved</Text>
               </View>
 
               <View style={styles.div} />
@@ -199,16 +202,14 @@ export default function ProfileScreen() {
                 <Text style={styles.statNumber}>
                   {user.unsafeMetadata?.bsCount > 0
                     ? Math.round(
-                      (user.unsafeMetadata.bsCountA /
-                        user.unsafeMetadata.bsCount) *
-                      100
-                    )
+                        (user.unsafeMetadata.bsCountA /
+                          user.unsafeMetadata.bsCount) *
+                          100
+                      )
                     : 0}
                   %
                 </Text>
-                <Text style={styles.statLabel}>
-                  Acceptance Rate
-                </Text>
+                <Text style={styles.statLabel}>Acceptance Rate</Text>
               </View>
             </View>
 
@@ -217,15 +218,10 @@ export default function ProfileScreen() {
               <TouchableOpacity
                 style={styles.primaryButton}
                 onPress={() =>
-                  Alert.alert(
-                    "Coming Soon",
-                    "Feature not available"
-                  )
+                  Alert.alert("Coming Soon", "Feature not available")
                 }
               >
-                <Text style={styles.primaryButtonText}>
-                  Edit Profile
-                </Text>
+                <Text style={styles.primaryButtonText}>Edit Profile</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -239,16 +235,14 @@ export default function ProfileScreen() {
               <TouchableOpacity
                 style={[
                   styles.tab,
-                  activeTab === "approved" &&
-                  styles.activeTab,
+                  activeTab === "approved" && styles.activeTab,
                 ]}
                 onPress={() => setActiveTab("approved")}
               >
                 <Text
                   style={[
                     styles.tabText,
-                    activeTab === "approved" &&
-                    styles.activeTabText,
+                    activeTab === "approved" && styles.activeTabText,
                   ]}
                 >
                   Approved
@@ -258,16 +252,14 @@ export default function ProfileScreen() {
               <TouchableOpacity
                 style={[
                   styles.tab,
-                  activeTab === "pending" &&
-                  styles.activeTab,
+                  activeTab === "pending" && styles.activeTab,
                 ]}
                 onPress={() => setActiveTab("pending")}
               >
                 <Text
                   style={[
                     styles.tabText,
-                    activeTab === "pending" &&
-                    styles.activeTabText,
+                    activeTab === "pending" && styles.activeTabText,
                   ]}
                 >
                   Pending
@@ -281,9 +273,7 @@ export default function ProfileScreen() {
                 <View style={styles.bookCard} key={index}>
                   <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={() =>
-                      handleDelete(bookset._id)
-                    }
+                    onPress={() => handleDelete(bookset._id)}
                   >
                     <MaterialCommunityIcons
                       name="delete"
@@ -298,22 +288,18 @@ export default function ProfileScreen() {
                   />
 
                   <View style={styles.bookInfo}>
-                    <Text style={styles.bookTitle}>
-                      {bookset.title}
-                    </Text>
+                    <Text style={styles.bookTitle}>{bookset.title}</Text>
 
                     <Text style={styles.bookAuthor}>
                       Grade: {bookset.grade}
                     </Text>
 
                     <Text style={styles.progressText}>
-                      Subjects:{" "}
-                      {bookset.subjects.join(", ")}
+                      Subjects: {bookset.subjects.join(", ")}
                     </Text>
 
                     <Text style={styles.progressText}>
-                      Board:{" "}
-                      {bookset.board.toUpperCase()}
+                      Board: {bookset.board.toUpperCase()}
                     </Text>
 
                     <Text style={styles.progressText}>
@@ -327,10 +313,7 @@ export default function ProfileScreen() {
                       style={{
                         marginTop: 4,
                         fontSize: 11,
-                        color:
-                          activeTab === "approved"
-                            ? "green"
-                            : "orange",
+                        color: activeTab === "approved" ? "green" : "orange",
                       }}
                     >
                       {activeTab === "approved"
@@ -341,9 +324,7 @@ export default function ProfileScreen() {
                 </View>
               ))
             ) : (
-              <Text style={styles.emptyText}>
-                No {activeTab} items.
-              </Text>
+              <Text style={styles.emptyText}>No {activeTab} items.</Text>
             )}
           </View>
 
@@ -354,14 +335,8 @@ export default function ProfileScreen() {
             style={styles.signOutButton}
             onPress={handleSignOut}
           >
-            <Text style={styles.primaryButtonText}>
-              Sign Out
-            </Text>
-            <MaterialCommunityIcons
-              name="logout"
-              size={18}
-              color="#FFF"
-            />
+            <Text style={styles.primaryButtonText}>Sign Out</Text>
+            <MaterialCommunityIcons name="logout" size={18} color="#FFF" />
           </TouchableOpacity>
         </ScrollView>
       )}

@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   Keyboard,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,6 +22,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { Circle, Path, Svg } from "react-native-svg";
 
 const CustomTextInput = (props) => {
   const defaultColor = "#999999ff";
@@ -116,7 +118,7 @@ export default function AddBooksScreen() {
         setUris((prevUris) => [...prevUris, u.uri]);
 
         newImgs.push(
-          "data:image/" + u.mimeType.split("/")[1] + ";base64," + u.base64,
+          "data:image/" + u.mimeType.split("/")[1] + ";base64," + u.base64
         );
       });
 
@@ -155,7 +157,7 @@ export default function AddBooksScreen() {
     if (!formData.title || formData.title.trim() === "")
       newErrors.title = "Required.";
     newErrors.subjects = formData.subjects.map((s) =>
-      !s || s.trim() === "" ? "Required." : false,
+      !s || s.trim() === "" ? "Required." : false
     );
 
     if (!formData.institution) newErrors.institution = "Required.";
@@ -196,7 +198,7 @@ export default function AddBooksScreen() {
     if (!validate()) {
       Alert.alert(
         "Empty fields!",
-        "All the details/fields must be filled before submitting. ", //+ JSON.stringify(errors)
+        "All the details/fields must be filled before submitting. " //+ JSON.stringify(errors)
       );
       return;
     }
@@ -226,7 +228,7 @@ export default function AddBooksScreen() {
 
       Alert.alert(
         "Success",
-        "Requested " + formData.type + " uploaded successfully!",
+        "Requested " + formData.type + " uploaded successfully!"
       );
       setFormData(defFD);
     } catch (error) {
@@ -254,16 +256,15 @@ export default function AddBooksScreen() {
           <View style={styles.uploadSection}>
             <View style={[styles.uploadCard, errors.imgs && styles.inputError]}>
               <Svg
-                stroke="currentColor"
+                stroke="#6366f1"
                 fill="none"
                 strokeWidth={2}
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                height="200px"
-                width="200px"
+                height="50px"
+                width="50px"
                 xmlns="http://www.w3.org/2000/svg"
-                {...props}
               >
                 <Path d="M16 5h6M19 2v6M21 11.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7.5" />
                 <Path d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
@@ -276,8 +277,23 @@ export default function AddBooksScreen() {
                 onPress={pickImage}
                 disabled={loading}
               >
-                <Ionicons name="cloud-upload" size={20} color="white" />
-                <Text style={styles.uploadBtnText}>Choose Image</Text>
+                <Svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#6366f1"
+                  viewBox="0 0 24 24"
+                  stroke="#fff"
+                  strokeWidth={1.5}
+                  height="50px"
+                  width="50px"
+                  className="w-6 h-6"
+                >
+                  <Path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                  />
+                </Svg>
+                <Text style={styles.uploadBtnText}>Choose Image to upload</Text>
               </TouchableOpacity>
             </View>
 
@@ -285,28 +301,28 @@ export default function AddBooksScreen() {
           </View>
 
           {/* Images */}
-          <ScrollView horizontal style={styles.selectedSection}>
-            {!!uris.length &&
-              uris.map((uri, index) => (
-                <View style={styles.imgCont} key={index}>
-                  <Image source={{ uri }} style={styles.img} />
-                  <Entypo
-                    name="circle-with-cross"
-                    size={32}
-                    color="red"
-                    style={{
-                      backgroundColor: "#fff",
-                      borderRadius: 50,
-                      position: "absolute",
-                      bottom: 10,
-                      left: "50%",
-                      transform: [{ translateX: -16 }],
-                    }}
-                    onPress={() => removeImg(index)}
-                  />
-                </View>
-              ))}
-          </ScrollView>
+          {/* <Pressable
+            style={({ pressed }) => [
+              styles.imgCont,
+              { transform: [{ scale: pressed ? 0.96 : 1 }] },
+            ]}
+          > */}
+            <ScrollView horizontal style={styles.selectedSection}>
+              {!!uris.length &&
+                uris.map((uri, index) => (
+                  <View style={styles.imgCont} key={index}>
+                    <Image source={{ uri }} style={styles.img} />
+                    <Entypo
+                      name="circle-with-cross"
+                      size={28}
+                      color="#ff4d4f"
+                      style={styles.removeIcon}
+                      onPress={() => removeImg(index)}
+                    />
+                  </View>
+                ))}
+            </ScrollView>
+          {/* </Pressable> */}
 
           <Text style={styles.sectionTitle2}>Your Name</Text>
 
@@ -330,7 +346,7 @@ export default function AddBooksScreen() {
           />
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Book Details</Text>
+            <Text>Book Details</Text>
 
             <CustomTextInput
               placeholder="Book Title"
@@ -402,7 +418,7 @@ export default function AddBooksScreen() {
                       setErrors((prev) => ({
                         ...prev,
                         subjects: (prev.subjects || []).map((v, i) =>
-                          i === idx ? false : v,
+                          i === idx ? false : v
                         ),
                       }));
                     }}
@@ -575,9 +591,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   imgCont: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
+    // display: "flex",
+    // flexDirection: "row",
+    // alignItems: "center",
     // marginVertical: 16,
     // borderRadius: 24,
     // backgroundColor: '#ee0f',
@@ -623,7 +639,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#0f172a",
-    marginTop: 12,
+    marginTop: 8,
   },
   uploadDesc: {
     fontSize: 12,
@@ -649,21 +665,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   selectedSection: {
-    // paddingHorizontal: 16,
-    paddingVertical: 16,
+    marginBottom: 16,
+    paddingHorizontal: 15,
+    width: "100%",
+    overflow: "hidden"
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
-    marginBottom: 12,
+  img: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
   },
-  sectionTitle2: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
-    marginBottom: 12,
-    paddingInline: 16,
+  removeIcon: {
+    position: "absolute",
+    bottom: 8,
+    alignSelf: "center",
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 4,
+    elevation: 3,
   },
   bookItem: {
     flexDirection: "row",
@@ -675,6 +694,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "#e2e8f0",
+  },
+  sectionTitle2: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0f172a",
+    marginBottom: 12,
+    paddingInline: 16
   },
   bookIcon: {
     width: 40,

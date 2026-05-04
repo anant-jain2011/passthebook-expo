@@ -6,18 +6,16 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Action = ({
-  icon,
-  label,
-}) => (
-  <View style={styles.actionItem}>
+const Action = ({ icon, label, onPress }) => (
+  <TouchableOpacity style={styles.actionItem} onPress={onPress}>
     <Feather name={icon} size={22} color="#34b7d1" />
     <ThemedText style={styles.actionText}>{label}</ThemedText>
-  </View>
+  </TouchableOpacity>
 );
 
 export default function HomeScreen() {
@@ -37,9 +35,7 @@ export default function HomeScreen() {
 
         <View style={styles.headerCenter}>
           <Feather name="book-open" size={26} color="#0c77b1" />
-          <ThemedText style={styles.headerTitle}>
-            PassTheBook
-          </ThemedText>
+          <ThemedText style={styles.headerTitle}>PassTheBook</ThemedText>
         </View>
 
         <View style={styles.headerRight}>
@@ -50,7 +46,12 @@ export default function HomeScreen() {
             style={{ marginRight: 12 }}
             onPress={() => router.push("/notifications")}
           />
-          <Feather name="shopping-cart" size={22} color="#111" onPress={() => router.push("/cart")} />
+          <Feather
+            name="shopping-cart"
+            size={22}
+            color="#111"
+            onPress={() => router.push("/cart")}
+          />
         </View>
       </View>
 
@@ -77,10 +78,22 @@ export default function HomeScreen() {
 
       {/* ===== ACTIONS ===== */}
       <View style={styles.actions}>
-        <Action icon="book" label="Books" />
-        <Action icon="tag" label="Sell" />
+        <Action
+          icon="book"
+          label="Books"
+          onPress={() => router.push("/(tabs)/find-books")}
+        />
+        <Action
+          icon="tag"
+          label="Sell"
+          onPress={() => router.push("/(tabs)/add-books")}
+        />
         <Action icon="bookmark" label="Orders" />
-        <Action icon="heart" label="Wishlist" />
+        <Action
+          icon="heart"
+          label="Wishlist"
+          onPress={() => router.push("/(tabs)/wishlist")}
+        />
       </View>
 
       {/* ===== BANNER ===== */}
@@ -91,26 +104,19 @@ export default function HomeScreen() {
           </ThemedText>
 
           <Link href="/find-books" style={styles.bannerBtn}>
-            <ThemedText style={styles.bannerBtnText}>
-              Explore Now →
-            </ThemedText>
+            <ThemedText style={styles.bannerBtnText}>Explore Now →</ThemedText>
           </Link>
         </View>
       </View>
 
       {/* ===== BOOKS ===== */}
       <View style={styles.padding}>
-        <ThemedText style={styles.sectionTitle}>
-          Why PassTheBook?
-        </ThemedText>
+        <ThemedText style={styles.sectionTitle}>Why PassTheBook?</ThemedText>
 
         <View style={styles.infoGrid}>
-
           <View style={styles.infoCard}>
             <Feather name="book-open" size={24} color="#0c77b1" />
-            <ThemedText style={styles.infoTitle}>
-              Affordable Books
-            </ThemedText>
+            <ThemedText style={styles.infoTitle}>Affordable Books</ThemedText>
             <ThemedText style={styles.infoDesc}>
               Buy second-hand books at the best prices.
             </ThemedText>
@@ -118,9 +124,7 @@ export default function HomeScreen() {
 
           <View style={styles.infoCard}>
             <Feather name="repeat" size={24} color="#0c77b1" />
-            <ThemedText style={styles.infoTitle}>
-              Reuse & Save
-            </ThemedText>
+            <ThemedText style={styles.infoTitle}>Reuse & Save</ThemedText>
             <ThemedText style={styles.infoDesc}>
               Give books a second life and reduce waste.
             </ThemedText>
@@ -128,9 +132,7 @@ export default function HomeScreen() {
 
           <View style={styles.infoCard}>
             <Feather name="shield" size={24} color="#0c77b1" />
-            <ThemedText style={styles.infoTitle}>
-              Safe Listings
-            </ThemedText>
+            <ThemedText style={styles.infoTitle}>Safe Listings</ThemedText>
             <ThemedText style={styles.infoDesc}>
               Admin approval ensures quality content.
             </ThemedText>
@@ -138,14 +140,11 @@ export default function HomeScreen() {
 
           <View style={styles.infoCard}>
             <Feather name="shopping-bag" size={24} color="#0c77b1" />
-            <ThemedText style={styles.infoTitle}>
-              Easy Buying
-            </ThemedText>
+            <ThemedText style={styles.infoTitle}>Easy Buying</ThemedText>
             <ThemedText style={styles.infoDesc}>
               Seamless checkout like an e-commerce app.
             </ThemedText>
           </View>
-
         </View>
       </View>
     </ScrollView>
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     fontSize: 14,
-    color: "#444"
+    color: "#444",
   },
 
   /* ACTIONS */
@@ -306,35 +305,35 @@ const styles = StyleSheet.create({
   },
 
   infoGrid: {
-  flexDirection: "row",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-},
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
 
-infoCard: {
-  width: "48%",
-  backgroundColor: "#fff",
-  borderRadius: 16,
-  padding: 14,
-  marginBottom: 12,
+  infoCard: {
+    width: "48%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
 
-  shadowColor: "#000",
-  shadowOpacity: 0.05,
-  shadowRadius: 8,
-  shadowOffset: { width: 0, height: 4 },
-  elevation: 3,
-},
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
 
-infoTitle: {
-  marginTop: 8,
-  fontSize: 14,
-  fontWeight: "700",
-},
+  infoTitle: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "700",
+  },
 
-infoDesc: {
-  marginTop: 4,
-  fontSize: 12,
-  color: "#6b7280",
-  lineHeight: 16,
-},
+  infoDesc: {
+    marginTop: 4,
+    fontSize: 12,
+    color: "#6b7280",
+    lineHeight: 16,
+  },
 });

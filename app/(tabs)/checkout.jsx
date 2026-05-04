@@ -12,7 +12,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import RazorpayCheckout from 'react-native-razorpay';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CheckoutScreen() {
@@ -136,13 +135,13 @@ export default function CheckoutScreen() {
                             },
                             theme: { color: '#F37254' }
                         }
-                        RazorpayCheckout.open(options).then((data) => {
-                            // handle success
-                            alert(`Success: ${data.razorpay_payment_id}`);
-                        }).catch((error) => {
-                            // handle failure
-                            alert(`Error: ${error} | ${error.description}`);
-                        });
+                        // RazorpayCheckout.open(options).then((data) => {
+                        //     // handle success
+                        //     alert(`Success: ${data.razorpay_payment_id}`);
+                        // }).catch((error) => {
+                        //     // handle failure
+                        //     alert(`Error: ${error} | ${error.description}`);
+                        // });
                     }}>
                         <Text style={styles.paymentText}>Pay with Razorpay</Text>
                     </TouchableOpacity>

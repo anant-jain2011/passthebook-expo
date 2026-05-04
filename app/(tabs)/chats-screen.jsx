@@ -1,8 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { Path, Svg } from "react-native-svg";
 
 export default function ChatsScreen() {
   const scrollViewRef = useRef();
@@ -23,13 +35,16 @@ export default function ChatsScreen() {
       role: "user",
     },
     {
-      content: "Hi! 👋 I'm here to help you understand PassTheBook. What would you like to know first?",
+      content:
+        "Hi! 👋 I'm here to help you understand PassTheBook. What would you like to know first?",
       role: "assistant",
     },
   ]);
 
   useEffect(() => {
-    Keyboard.addListener("keyboardDidShow", e => setSpace(e.endCoordinates.height - (insets.bottom * 1.5)));
+    Keyboard.addListener("keyboardDidShow", (e) =>
+      setSpace(e.endCoordinates.height - insets.bottom * 1.5)
+    );
     Keyboard.addListener("keyboardDidHide", () => setSpace(0));
 
     scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -41,74 +56,74 @@ export default function ChatsScreen() {
   }, [messages]);
 
   const handleSend = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userMsg = { content: input, role: "user" };
+    const userMsg = { content: input, role: "user" };
 
-  const newMsgs = [
-    ...messages,
-    userMsg,
-    { content: "...", role: "assistant" },
-  ];
+    const newMsgs = [
+      ...messages,
+      userMsg,
+      { content: "...", role: "assistant" },
+    ];
 
-  setMessages(newMsgs);
-  setInput("");
+    setMessages(newMsgs);
+    setInput("");
 
-  try {
-    console.log(process.env.EXPO_PUBLIC_API);
-    
-    const res = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key="+process.env.EXPO_PUBLIC_API,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: [...messages, userMsg]
-                    .map((m) => `${m.role}: ${m.content}`)
-                    .join("\n"),
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+    try {
+      console.log(process.env.EXPO_PUBLIC_API);
 
-    const data = await res.json();
-    console.log(data);
-    
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" +
+          process.env.EXPO_PUBLIC_API,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: [...messages, userMsg]
+                      .map((m) => `${m.role}: ${m.content}`)
+                      .join("\n"),
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
 
-    const reply =
-      data ? data?.candidates[0]?.content?.parts[0].text :
-      "No response, try again!";
+      const data = await res.json();
+      console.log(data);
 
-    setMessages((prevMsgs) => {
-      const updated = [...prevMsgs];
-      updated[updated.length - 1] = {
-        role: "assistant",
-        content: reply.replace(/\*\*/g, ""),
-      };
-      return updated;
-    });
-  } catch (err) {
-    console.error(err);
+      const reply = data
+        ? data?.candidates[0]?.content?.parts[0].text
+        : "No response, try again!";
 
-    setMessages((prevMsgs) => {
-      const updated = [...prevMsgs];
-      updated[updated.length - 1] = {
-        role: "assistant",
-        content: "Error fetching response",
-      };
-      return updated;
-    });
-  }
-};
+      setMessages((prevMsgs) => {
+        const updated = [...prevMsgs];
+        updated[updated.length - 1] = {
+          role: "assistant",
+          content: reply.replace(/\*\*/g, ""),
+        };
+        return updated;
+      });
+    } catch (err) {
+      console.error(err);
+
+      setMessages((prevMsgs) => {
+        const updated = [...prevMsgs];
+        updated[updated.length - 1] = {
+          role: "assistant",
+          content: "Error fetching response",
+        };
+        return updated;
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: -insets.bottom }]}>
@@ -121,17 +136,30 @@ export default function ChatsScreen() {
           ref={scrollViewRef}
           style={styles.messageContainer}
           contentContainerStyle={styles.messageContentContainer}
-          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+          onContentSizeChange={() =>
+            scrollViewRef.current?.scrollToEnd({ animated: true })
+          }
         >
           {messages.slice(2).map((msg, id) => (
             <View
               key={id}
-              style={[styles.message, msg.role === "user" ? styles.userMessage : styles.botMessage]}
+              style={[
+                styles.message,
+                msg.role === "user" ? styles.userMessage : styles.botMessage,
+              ]}
             >
               <View
-                style={[styles.messageBubble, msg.role === "user" ? styles.userBubble : styles.botBubble]}
+                style={[
+                  styles.messageBubble,
+                  msg.role === "user" ? styles.userBubble : styles.botBubble,
+                ]}
               >
-                <Text style={[styles.messageText, msg.role === "user" ? styles.userText : styles.botText]}>
+                <Text
+                  style={[
+                    styles.messageText,
+                    msg.role === "user" ? styles.userText : styles.botText,
+                  ]}
+                >
                   {msg.content}
                 </Text>
               </View>
@@ -151,7 +179,20 @@ export default function ChatsScreen() {
             onSubmitEditing={handleSend}
           />
           <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-            <Ionicons name="send" size={20} color="white" />
+            <Svg
+              stroke="#fff"
+              fill="#fff"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              height="20px"
+              width="20px"
+              style={{
+                marginLeft: 2
+              }}
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Path d="m476.59 227.05-.16-.07L49.35 49.84A23.56 23.56 0 0 0 27.14 52 24.65 24.65 0 0 0 16 72.59v113.29a24 24 0 0 0 19.52 23.57l232.93 43.07a4 4 0 0 1 0 7.86L35.53 303.45A24 24 0 0 0 16 327v113.31A23.57 23.57 0 0 0 26.59 460a23.94 23.94 0 0 0 13.22 4 24.55 24.55 0 0 0 9.52-1.93L476.4 285.94l.19-.09a32 32 0 0 0 0-58.8z"></Path>
+            </Svg>
           </TouchableOpacity>
         </View>
       </View>
