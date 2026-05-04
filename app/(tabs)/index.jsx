@@ -10,8 +10,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-/* ================= COMPONENT ================= */
-
 const Action = ({
   icon,
   label,
@@ -21,8 +19,6 @@ const Action = ({
     <ThemedText style={styles.actionText}>{label}</ThemedText>
   </View>
 );
-
-/* ================= SCREEN ================= */
 
 export default function HomeScreen() {
   const { user } = useUser();
@@ -69,7 +65,7 @@ export default function HomeScreen() {
       </View>
 
       {/* ===== SEARCH ===== */}
-      <View style={styles.searchBar}>
+      {/* <View style={styles.searchBar}>
         <Feather name="search" size={20} color="#999" />
         <TextInput
           placeholder="Search books, subjects..."
@@ -77,7 +73,7 @@ export default function HomeScreen() {
           placeholderTextColor="#9ca3af"
         />
         <Feather name="sliders" size={20} color="#1687a3" />
-      </View>
+      </View> */}
 
       {/* ===== ACTIONS ===== */}
       <View style={styles.actions}>
@@ -156,8 +152,6 @@ export default function HomeScreen() {
   );
 }
 
-/* ================= STYLES ================= */
-
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -225,6 +219,7 @@ const styles = StyleSheet.create({
 
   /* ACTIONS */
   actions: {
+    marginTop: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 16,
@@ -234,6 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     padding: 12,
+    paddingBottom: 10,
     borderRadius: 14,
     width: 70,
     elevation: 3,

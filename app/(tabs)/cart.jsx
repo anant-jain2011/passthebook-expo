@@ -117,9 +117,11 @@ export default function CartScreen() {
     if (!cartItems.length) {
         return (
             <SafeAreaView style={styles.container}>
+                <Image source={require("@/assets/images/not-found.avif")} style={{ width: "90%", height: 340 }} />
                 <Text style={styles.emptyText}>
                     Your cart is empty.
                 </Text>
+                {/* e */}
             </SafeAreaView>
         );
     }
@@ -151,6 +153,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#f8fafc",
         padding: 16,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
     title: {
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
 
     emptyText: {
         textAlign: "center",
-        marginTop: 50,
+        marginTop: 30,
         color: "#64748b",
         fontSize: 36,
     },

@@ -1,3 +1,4 @@
+import Carousel from "@/components/Carousel";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -21,6 +22,7 @@ export default function BookDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
+  const [crl, setCrl] = useState(false);
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -92,12 +94,13 @@ export default function BookDetails() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 📸 IMAGE CAROUSEL */}
+        <TouchableOpacity onPress={() => setCrl(true)}>
         <ScrollView
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
         >
-          {book.imgs.map((uri,i) => (
+          {book.imgs.map((uri, i) => (
             <Image
               key={i}
               source={{ uri }}
@@ -105,6 +108,7 @@ export default function BookDetails() {
             />
           ))}
         </ScrollView>
+        </TouchableOpacity>
 
         {/* 📄 CONTENT */}
         <View style={styles.content}>
@@ -125,7 +129,7 @@ export default function BookDetails() {
 
           {/* TAGS */}
           <View style={styles.tags}>
-            {book.subjects.map((s,i) => (
+            {book.subjects.map((s, i) => (
               <Text key={i} style={styles.tag}>
                 {s}
               </Text>
@@ -173,6 +177,8 @@ export default function BookDetails() {
           <Text style={styles.buyText}>View Seller Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {crl && <Carousel images={book.imgs} onClose={() => setCrl(false)} />}
     </SafeAreaView>
   );
 }

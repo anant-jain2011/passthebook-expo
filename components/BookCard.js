@@ -11,11 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Carousel from "./Carousel";
 import { useRouter } from "expo-router";
 
 const BookCard = ({ book }) => {
-  const [crl, setCrl] = useState(false);
   const [imgs] = useState(book.imgs || []);
   const [subjects] = useState(book.subjects || []);
   const [giverDetails] = useState(book.giverDetails || {});
@@ -51,9 +49,7 @@ const BookCard = ({ book }) => {
           <Text style={styles.subjectBadge}>{subjects.join(", ")}</Text>
 
           <View>
-            <TouchableOpacity onPress={() => setCrl(true)}>
-              <Image source={{ uri: imgs[0] }} style={styles.bookImage} />
-            </TouchableOpacity>
+            <Image source={{ uri: imgs[0] }} style={styles.bookImage} />
 
             <View style={styles.cardInfo}>
               <Text
@@ -107,8 +103,6 @@ const BookCard = ({ book }) => {
           </View>
         </View>
       </Pressable>
-
-      {crl && <Carousel images={imgs} onClose={() => setCrl(false)} />}
     </>
   );
 };

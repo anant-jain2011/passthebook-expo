@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-expo";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Feather, Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useFonts } from "expo-font";
 import * as ImagePicker from "expo-image-picker";
@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { PhotoIcon } from "react-native-heroicons/solid";
+import { PhotoIcon, AcademicCapIcon } from "react-native-heroicons/solid";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -53,7 +53,7 @@ export default function AddBooksScreen() {
     Ionicons: require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"),
   });
 
-  const [formData, setFormData] = useState({
+  const defFD = {
     imgs: [],
     title: "",
     subjects: [""],
@@ -67,7 +67,9 @@ export default function AddBooksScreen() {
       id: user?.id,
       ownerName: user?.fullName || "",
     },
-  });
+  };
+
+  const [formData, setFormData] = useState(defFD);
 
   const [errors, setErrors] = useState({
     imgs: false,
@@ -114,7 +116,7 @@ export default function AddBooksScreen() {
         setUris((prevUris) => [...prevUris, u.uri]);
 
         newImgs.push(
-          "data:image/" + u.mimeType.split("/")[1] + ";base64," + u.base64
+          "data:image/" + u.mimeType.split("/")[1] + ";base64," + u.base64,
         );
       });
 
@@ -153,7 +155,7 @@ export default function AddBooksScreen() {
     if (!formData.title || formData.title.trim() === "")
       newErrors.title = "Required.";
     newErrors.subjects = formData.subjects.map((s) =>
-      !s || s.trim() === "" ? "Required." : false
+      !s || s.trim() === "" ? "Required." : false,
     );
 
     if (!formData.institution) newErrors.institution = "Required.";
@@ -162,7 +164,8 @@ export default function AddBooksScreen() {
       newErrors.grade = "Required.";
 
     if (!formData.condition) newErrors.condition = "Required.";
-    if (!formData.board) newErrors.board = "Required.";
+    if (formData.institution === "school" && !formData.board)
+      newErrors.board = "Required.";
     if (!formData.type) newErrors.type = "Required.";
 
     if (!formData.price) newErrors.price = "Required.";
@@ -193,7 +196,7 @@ export default function AddBooksScreen() {
     if (!validate()) {
       Alert.alert(
         "Empty fields!",
-        "All the details/fields must be filled before submitting. " //+ JSON.stringify(errors)
+        "All the details/fields must be filled before submitting. ", //+ JSON.stringify(errors)
       );
       return;
     }
@@ -221,7 +224,11 @@ export default function AddBooksScreen() {
 
       console.log(data);
 
-      Alert.alert("Success", "Requested " + formData.type + " uploaded successfully!");
+      Alert.alert(
+        "Success",
+        "Requested " + formData.type + " uploaded successfully!",
+      );
+      setFormData(defFD);
     } catch (error) {
       Alert.alert("Error", "Failed to upload books as " + error.message);
       console.log(error.message);
@@ -246,7 +253,22 @@ export default function AddBooksScreen() {
           {/* Upload */}
           <View style={styles.uploadSection}>
             <View style={[styles.uploadCard, errors.imgs && styles.inputError]}>
-              <PhotoIcon size={48} color="#6366f1" />
+              <Svg
+                stroke="currentColor"
+                fill="none"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                height="200px"
+                width="200px"
+                xmlns="http://www.w3.org/2000/svg"
+                {...props}
+              >
+                <Path d="M16 5h6M19 2v6M21 11.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7.5" />
+                <Path d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
+                <Circle cx={9} cy={9} r={2} />
+              </Svg>
               <Text style={styles.uploadTitle}>Upload Book Covers</Text>
               <Text style={styles.uploadDesc}>PNG, JPG up to 10MB</Text>
               <TouchableOpacity
@@ -259,9 +281,7 @@ export default function AddBooksScreen() {
               </TouchableOpacity>
             </View>
 
-            {errors.imgs && (
-              <Text style={styles.errorText}>{errors.imgs}</Text>
-            )}
+            {errors.imgs && <Text style={styles.errorText}>{errors.imgs}</Text>}
           </View>
 
           {/* Images */}
@@ -294,7 +314,7 @@ export default function AddBooksScreen() {
             placeholder="Your Name"
             value={formData.giverDetails.ownerName}
             style={{
-              marginInline: 16
+              marginInline: 16,
             }}
             onChangeText={(text) => {
               setFormData({
@@ -382,7 +402,7 @@ export default function AddBooksScreen() {
                       setErrors((prev) => ({
                         ...prev,
                         subjects: (prev.subjects || []).map((v, i) =>
-                          i === idx ? false : v
+                          i === idx ? false : v,
                         ),
                       }));
                     }}
@@ -428,8 +448,7 @@ export default function AddBooksScreen() {
                 setFormData({
                   ...formData,
                   institution,
-                  grade:
-                    institution === "school" ? formData.grade : "",
+                  grade: institution === "school" ? formData.grade : "",
                 });
                 setErrors((prev) => ({
                   ...prev,
@@ -445,7 +464,7 @@ export default function AddBooksScreen() {
             </Picker>
 
             {/* Grade (only school) */}
-            {formData.institution === "school" &&
+            {formData.institution === "school" && (
               <>
                 <CustomTextInput
                   placeholder="Grade (1-12)"
@@ -455,12 +474,7 @@ export default function AddBooksScreen() {
                   onChangeText={(text) => {
                     setFormData({
                       ...formData,
-                      grade:
-                        text === "0"
-                          ? "1"
-                          : +text > 12
-                            ? "12"
-                            : text,
+                      grade: text === "0" ? "1" : +text > 12 ? "12" : text,
                     });
                     setErrors((prev) => ({ ...prev, grade: false }));
                   }}
@@ -482,7 +496,7 @@ export default function AddBooksScreen() {
                   <Picker.Item label="State Board" value="state_board" />
                 </Picker>
               </>
-            }
+            )}
 
             {/* Price */}
             <CustomTextInput
@@ -531,7 +545,6 @@ export default function AddBooksScreen() {
             </Picker>
           </View>
 
-
           <TouchableOpacity
             style={[
               styles.submitBtn,
@@ -545,14 +558,8 @@ export default function AddBooksScreen() {
               <ActivityIndicator color="white" />
             ) : (
               <>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={20}
-                  color="white"
-                />
-                <Text style={styles.submitBtnText}>
-                  Confirm Request
-                </Text>
+                <Ionicons name="checkmark-circle" size={20} color="white" />
+                <Text style={styles.submitBtnText}>Confirm Request</Text>
               </>
             )}
           </TouchableOpacity>
@@ -561,8 +568,6 @@ export default function AddBooksScreen() {
     )
   );
 }
-
-// (styles unchanged)
 
 const styles = StyleSheet.create({
   container: {
@@ -658,7 +663,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0f172a",
     marginBottom: 12,
-    paddingInline: 16
+    paddingInline: 16,
   },
   bookItem: {
     flexDirection: "row",

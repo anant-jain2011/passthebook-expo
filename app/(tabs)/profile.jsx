@@ -78,25 +78,34 @@ export default function ProfileScreen() {
               "https://ptb-backend.vercel.app/delete?id=" + safeId
             );
 
-            // Remove from both lists
-            setApproved((prev) =>
-              prev.filter((b) => b._id !== booksetId)
-            );
-            setPending((prev) =>
-              prev.filter((b) => b._id !== booksetId)
-            );
-
-            // Update Clerk metadata
             const updatedIds =
               user.unsafeMetadata?.booksets.filter(
                 (id) => id !== booksetId
               );
 
+            let metaData = {
+              ...user.unsafeMetadata,
+              booksets: updatedIds,
+            }
+
+            // Remove from both lists
+            if (approved.includes(booksetId)) {
+              metaData["bsCountA"] = approved.length - 1;
+              
+              setApproved((prev) =>
+                prev.filter((b) => b._id !== booksetId)
+              );
+            }
+            else {
+              metaData["bsCount"] = pending.length - 1;
+              
+              setPending((prev) =>
+                prev.filter((b) => b._id !== booksetId)
+              );
+            }
+
             await user.update({
-              unsafeMetadata: {
-                ...user.unsafeMetadata,
-                booksets: updatedIds,
-              },
+              unsafeMetadata: metaData,
             });
           } catch (err) {
             console.log(err);
